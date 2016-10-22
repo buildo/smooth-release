@@ -1,0 +1,18 @@
+{
+  "github": {
+    "token": "123",
+    "changelog": {
+      "ignore": ["DX", "discarded"],
+      "types": [{
+        "title": "#### Fixes (bugs & defects):",
+        "labels": ["bug", "defect"]
+      }, {
+        "title": "#### Fixes (bugs & defects):",
+        "labels": ["bug", "defect"]
+      }]
+    }
+  },
+  "publish": {
+    "branch": "master"
+  }
+}
