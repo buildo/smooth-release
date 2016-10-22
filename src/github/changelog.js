@@ -1,5 +1,6 @@
-import { find, findLast, every } from 'lodash';
-import { github, getGithubOwnerAndRepo } from '../utils';
+import fs from 'fs';
+import { find, findLast, some } from 'lodash';
+import { github, getGithubOwnerAndRepo, getRootFolderPath } from '../utils';
 import config from '../config';
 
 const getAllClosedIssues = async (acc = [], issues) => {
@@ -50,7 +51,7 @@ const groupIssuesByTag = (closedIssues, tags) => {
 
 const groupIssuesByType = (issues, types) => {
   return issues.reduce((issuesByType, issue) => {
-    const type = find(types, type => every(type.labels, label => find(issue.labels, { name: label })));
+    const type = find(types, type => some(type.labels, label => find(issue.labels, { name: label })));
 
     if (type) {
       return {
@@ -87,10 +88,10 @@ export default async () => {
     const { owner, repo } = getGithubOwnerAndRepo();
     const header = `
 ## [${tag || 'Unreleased'}](https://github.com/${owner}/${repo}/tree/${tag || 'HEAD'})
-[Full Changelog](https://github.com/buildo/react-components/compare/${previousTag.name}...${tag || 'HEAD'})`;
+${previousTag ? `[Full Changelog](https://github.com/buildo/react-components/compare/${previousTag.name}...${tag || 'HEAD'})` : ''}`;
 
     const issuesGroupedByType = groupIssuesByType(issues, types);
-    const typeTitles = Object.keys(issuesGroupedByType);
+    const typeTitles = types.map(t => t.title);
 
     const content = typeTitles.reduce((acc, typeTitle) => {
       const issues = issuesGroupedByType[typeTitle].map(issue => `- ${issue.title} [#${issue.number}](${issue.url})`).join('\n');
@@ -100,7 +101,7 @@ export default async () => {
     return `${header}\n\n${content}`;
   };
 
-  const tagNames = Object.keys(issuesGroupedByTag);
+  const tagNames = tags.map(t => t.name);
 
   const changelogSections = tagNames.map((tag, i) => {
     const tagIssues = issuesGroupedByTag[tag];
@@ -109,7 +110,10 @@ export default async () => {
     return createChangelogSection(previousTag, tag, tagIssues);
   });
 
-  const unreleased = createChangelogSection(tagNames[0], null, issuesGroupedByTag.unreleased);
+  const unreleased = issuesGroupedByTag.unreleased.length ? createChangelogSection(tagNames[0], null, issuesGroupedByTag.unreleased) : '';
 
-  return `# Change Log\n\n${[unreleased].concat(changelogSections).join('\n\n')}`;
+  const changelogMarkdown = `# Change Log\n\n${[unreleased].concat(changelogSections).join('\n\n')}`;
+  fs.writeFileSync(`${getRootFolderPath()}/${config.github.changelog.outputPath}`, changelogMarkdown);
+
+  return changelogMarkdown;
 };

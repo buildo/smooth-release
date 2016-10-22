@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src && eslint test",
     "build": "rm -rf lib && babel src -d lib",
-    "releso": "npm run build && node lib/index.js"
+    "watch": "rm -rf lib && babel src -d lib --watch",
+    "start": "DEBUG=* node lib/index.js"
   },
   "bin": {
     "releso": "./releso"
@@ -17,11 +18,13 @@
   "dependencies": {
     "lodash": "^4.16.4",
     "octokat": "^0.4.18",
-    "tcomb": "^3.2.15"
+    "tcomb": "^3.2.15",
+    "yamljs": "^0.2.8"
   },
   "devDependencies": {
     "babel-cli": "^6",
     "babel-eslint": "^7.0.0",
+    "babel-plugin-transform-runtime": "^6.15.0",
     "babel-preset-es2015": "^6.16.0",
     "babel-preset-stage-0": "^6.16.0",
     "eslint": "^3.6.0",

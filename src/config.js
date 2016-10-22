@@ -1,10 +1,15 @@
+import fs from 'fs';
+import { execSync } from 'child_process';
 import t from 'tcomb';
 import { merge } from 'lodash';
-import configJson from '../config.json';
+
+const getRootFolderPath = () => execSync('git rev-parse --show-toplevel', { encoding: 'utf8' }).trim();
+
+const relesorc = JSON.parse(fs.readFileSync(`${getRootFolderPath()}/.relesorc`));
 
 const Config = t.interface({
   github: t.interface({
-    token: t.String,
+    token: t.maybe(t.String),
     changelog: t.interface({
       outputPath: t.maybe(t.String),
       ignore: t.maybe(t.list(t.String)),
@@ -32,6 +37,6 @@ const defaultConfig = {
   }
 };
 
-const config = merge(defaultConfig, configJson);
+const config = merge(defaultConfig, relesorc);
 
 export default Config(config);

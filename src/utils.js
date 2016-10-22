@@ -1,4 +1,4 @@
-import { execSync as _execSync } from 'child_process';
+import { execSync } from 'child_process';
 import debug from 'debug';
 import Octokat from 'octokat';
 import { startsWith, every } from 'lodash';
@@ -25,28 +25,26 @@ export const onError = e => {
 
 // UTILS
 
-export const execSync = (command, settings) => (
-  _execSync(command, { stdio: [process.stdin, process.stdout, process.stderr], encoding: 'utf8', ...settings })
-);
-
-export const getCurrentBranch = () => execSync('git rev-parse --abbrev-ref HEAD', { stdio: null }).trim();
+export const getCurrentBranch = () => execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
 
 export const isVersionTag = tag => (
   startsWith(tag.name, 'v') && every(tag.name.slice(1).split('.'), s => typeof parseInt(s) === 'number')
 );
 
+export const getRootFolderPath = () => execSync('git rev-parse --show-toplevel', { encoding: 'utf8' }).trim();
+
 
 // OCTOKAT
 
 export const getGithubOwnerAndRepo = () => {
-  const remoteOriginUrl = execSync('git config --get remote.origin.url');
+  const remoteOriginUrl = execSync('git config --get remote.origin.url', { encoding: 'utf8' }).trim();
 
-  const [owner, repo] = remoteOriginUrl.slice(15, remoteOriginUrl.length - 4).split('/');
+  const [owner, repo] = remoteOriginUrl.slice(startsWith(remoteOriginUrl, 'https') ? 19 : 15, remoteOriginUrl.length - 4).split('/');
 
   return { owner, repo };
 };
 
-const octokat = new Octokat({ token: config.github.token });
+const octokat = config.github.token ? new Octokat({ token: config.github.token }) : new Octokat();
 
 const { owner, repo } = getGithubOwnerAndRepo();
-export const github = octokat.repos(owner, repo);
+export const github = octokat.repos(`${owner}/${repo}`);
