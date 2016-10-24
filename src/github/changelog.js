@@ -1,11 +1,7 @@
 import fs from 'fs';
+import stagger from 'staggerjs';
 import { find, findLast, some, sortBy } from 'lodash';
-import {
-  github,
-  getGithubOwnerAndRepo,
-  getRootFolderPath,
-  stagger
-} from '../utils';
+import { github, getGithubOwnerAndRepo, getRootFolderPath } from '../utils';
 import getAllTags from '../modules/getAllTags';
 import getAllClosedIssues from '../modules/getAllClosedIssues';
 import config from '../config';
