@@ -67,7 +67,7 @@ export default async () => {
     lastVersionTagDateTime = tagCommit.commit.author.date;
 
     const issuesUpdatedAfterLastTag = await github.issues.fetch({ state: 'closed', since: lastVersionTagDateTime });
-    const unpublishedIssues = issuesUpdatedAfterLastTag.filter(i => i.closedAt >= lastVersionTagDateTime);
+    const unpublishedIssues = issuesUpdatedAfterLastTag.filter(i => i.closedAt >= new Date(lastVersionTagDateTime));
 
     if (unpublishedIssues.length === 0) {
       throw new Error('Can\'t find any issue closed after last publish. Are you sure there are new features to publish?');
@@ -78,7 +78,7 @@ export default async () => {
   }
 
   // VERIFY IF RELEASE SHOULD BE BREAKING
-  const unpublishedBreakingIssues = breakingIssuesUpdatedAfterLastTag.filter(i => !lastVersionTagDateTime || i.closedAt >= lastVersionTagDateTime);
+  const unpublishedBreakingIssues = breakingIssuesUpdatedAfterLastTag.filter(i => !lastVersionTagDateTime || i.closedAt >= new Date(lastVersionTagDateTime));
   const isBreaking = unpublishedBreakingIssues.length > 0;
 
   statusSteps.doneStep(true);
