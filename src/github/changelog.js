@@ -40,17 +40,16 @@ const groupIssuesByTag = (closedIssues, tags) => {
 };
 
 const groupIssuesByType = issues => {
-  const isBreaking = issue => hasAtLeastOneLabel(issue, config.github.changelog.breakingFeatures.labels);
-  const isBug = issue => hasAtLeastOneLabel(issue, config.github.changelog.bugs.labels);
+  const isBreaking = issue => hasAtLeastOneLabel(issue, config.github.changelog.breaking.labels);
+  const isBug = issue => hasAtLeastOneLabel(issue, config.github.changelog.bug.labels);
 
   return issues.reduce((issuesByType, issue) => {
-
-    if (isBreaking) {
+    if (isBreaking(issue)) {
       return {
         ...issuesByType,
         breaking: (issuesByType.breaking || []).concat(issue)
       };
-    } else if (isBug) {
+    } else if (isBug(issue)) {
       return {
         ...issuesByType,
         bug: (issuesByType.bug || []).concat(issue)
@@ -82,7 +81,7 @@ const createChangelogSection = ({ previousTag, tag, issues = [] }) => {
     return `${acc}\n\n${config.github.changelog[type].title}\n\n${issues}`;
   }, '');
 
-  return `${header}\n\n${content}`;
+  return `${header}\n\n${content.trim()}`;
 };
 
 const statusSteps = status.addItem('changelog', {
