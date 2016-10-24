@@ -4,4 +4,4 @@ yarn-error.log
 lib
 **/.tags
 **/.tags1
-.relesorc
+.smooth-releaserc
