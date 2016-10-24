@@ -5,7 +5,7 @@ import { merge } from 'lodash';
 
 const getRootFolderPath = () => execSync('git rev-parse --show-toplevel', { encoding: 'utf8' }).trim();
 
-const relesorc = JSON.parse(fs.readFileSync(`${getRootFolderPath()}/.relesorc`));
+const relesorc = JSON.parse(fs.readFileSync(`${getRootFolderPath()}/.smooth-releaserc`));
 
 const Config = t.interface({
   github: t.interface({
