@@ -90,12 +90,15 @@ export const stagger = (_methods, _settings) => {
         if (stack.length > 0) {
           // run next method
           const timeoutMillis = Math.max(minTimeBetweenMethods - (Date.now() - lastRun), 0);
-          setTimeout(() => {
-            runMethod(stack[0]);
 
+          const run = () => {
+            runMethod(stack[0]);
             // update stack
             stack = stack.slice(1, stack.length);
-          }, timeoutMillis);
+          };
+
+          timeoutMillis > 0 && setTimeout(run, timeoutMillis);
+          timeoutMillis <= 0 && run();
         } else {
           resolve(done);
         }
