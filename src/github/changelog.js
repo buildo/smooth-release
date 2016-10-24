@@ -1,7 +1,8 @@
 import fs from 'fs';
 import stagger from 'staggerjs';
+import status from 'node-status';
 import { find, findLast, some, sortBy } from 'lodash';
-import { github, getGithubOwnerAndRepo, getRootFolderPath } from '../utils';
+import { github, getGithubOwnerAndRepo, getRootFolderPath, info } from '../utils';
 import getAllTags from '../modules/getAllTags';
 import getAllClosedIssues from '../modules/getAllClosedIssues';
 import config from '../config';
@@ -84,16 +85,28 @@ const createChangelogSection = ({ previousTag, tag, issues = [] }) => {
   return `${header}\n\n${content}`;
 };
 
+const statusSteps = status.addItem('changelog', {
+  steps: [
+    'Get all closed issues from GitHub',
+    'Get all tags from GitHub',
+    'Generate changelog for each tag',
+    'Save changelog'
+  ]
+});
 
 export default async () => {
+  info('Generate CHANGELOG.md');
+  status.start({ pattern: '{spinner.cyan}' });
   // GET closed issues
   const closedIssues = (await getAllClosedIssues()).filter(i => !hasAtLeastOneLabel(i, config.github.changelog.ignoredLabels));
+  statusSteps.doneStep(true);
 
   // GET tags
   const tags = await getAllTags();
 
   // ADD "created-at" info to each tag
   const tagsWithCreatedAt = tags.length ? await addCreatedAtInfoToTags(tags) : tags;
+  statusSteps.doneStep(true);
 
   // GROUP issues by tag
   const issuesGroupedByTag = groupIssuesByTag(closedIssues, tagsWithCreatedAt);
@@ -109,9 +122,12 @@ export default async () => {
 
   // WRITE complete changelog
   const changelogMarkdown = `# Change Log\n\n${[unreleased].concat(changelogSections).join('\n\n')}`;
+  statusSteps.doneStep(true);
 
   // SAVE changelog
   fs.writeFileSync(`${getRootFolderPath()}/${config.github.changelog.outputPath}`, changelogMarkdown);
+  statusSteps.doneStep(true);
+  status.stop();
 
   return changelogMarkdown;
 };

@@ -1,4 +1,5 @@
 import { execSync } from 'child_process';
+import status from 'node-status';
 import Octokat from 'octokat';
 import console from 'better-console';
 import { startsWith, every } from 'lodash';
@@ -12,7 +13,8 @@ export const warning = console.warn;
 export const error = console.error;
 
 export const onError = e => {
-  error(`\nError: ${e.message}`);
+  status.stop();
+  error(`\nError: ${e.message}\n`);
   process.exit(1);
 };
 

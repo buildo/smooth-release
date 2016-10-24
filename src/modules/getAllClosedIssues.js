@@ -1,11 +1,8 @@
-import { github, log } from '../utils';
+import { github } from '../utils';
 
 let closedIssues = null;
 
 const getAllClosedIssues = async (acc = [], issues) => {
-  !issues && log('Getting closed issues');
-  acc.length && log(acc.length);
-
   if (!issues) {
     const firstPage = await github.issues.fetch({ state: 'closed', limit: 100 });
     return getAllClosedIssues(acc.concat(firstPage), firstPage);

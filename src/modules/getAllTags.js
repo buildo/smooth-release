@@ -1,11 +1,8 @@
-import { github, log } from '../utils';
+import { github } from '../utils';
 
 let tags = null;
 
 const getAllTags = async (acc = [], tags) => {
-  !tags && log('Getting tags');
-  acc.length && log(acc.length);
-
   if (!tags) {
     const firstPage = await github.tags.fetch();
     return getAllTags(acc.concat(firstPage), firstPage);

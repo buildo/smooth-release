@@ -1,41 +1,60 @@
 import { execSync } from 'child_process';
+import status from 'node-status';
 import { find } from 'lodash';
-import { github, getCurrentBranch, isVersionTag, log } from '../utils';
+import { github, getCurrentBranch, isVersionTag } from '../utils';
 import config from '../config';
 
 const stdio = [process.stdin, process.stdout, process.stderr];
 
-export default async () => {
-  // ENFORCE BRANCH
+const statusSteps = status.addItem('publish', {
+  steps: [
+    config.publish.branch && 'Validate branch',
+    config.publish.inSyncWithRemote && 'Validate sync with remote',
+    'Get all tags from GitHub',
+    'Check if version should be "breaking"',
+    'Run "npm version"',
+    'Run "npm publish"',
+    'Push changes and tags on GitHub'
+  ].filter(x => x)
+});
 
-  if (config.publish.branch !== null && getCurrentBranch() !== config.publish.branch) {
-    throw new Error(`You must be on "${config.publish.branch}" branch to perform this task. Aborting.`);
+export default async () => {
+  status.start({ pattern: '{spinner.cyan}' });
+
+  // ENFORCE BRANCH
+  if (config.publish.branch !== null) {
+    if (getCurrentBranch() !== config.publish.branch) {
+      statusSteps.doneStep(false);
+      throw new Error(`You must be on "${config.publish.branch}" branch to perform this task. Aborting.`);
+    }
+    statusSteps.doneStep(true);
   }
 
-
   // ENFORCE SYNC WITH REMOTE
-
   if (config.publish.inSyncWithRemote) {
-    log('Updating remote branches...');
     execSync('git fetch');
-    log('Done\n');
 
     const LOCAL = execSync('git rev-parse @', { encoding: 'utf8' }).trim();
     const REMOTE = execSync('git rev-parse @{u}', { encoding: 'utf8' }).trim();
     const BASE = execSync('git merge-base @ @{u}', { encoding: 'utf8' }).trim();
 
     if (LOCAL !== REMOTE && LOCAL === BASE) {
+      statusSteps.doneStep(false);
       throw new Error('Your local branch is out-of-date. Please pull the latest remote changes. Aborting.');
     } else if (LOCAL !== REMOTE && REMOTE === BASE) {
+      statusSteps.doneStep(false);
       throw new Error('Your local branch is ahead of its remote branch. Please push your local changes. Aborting.');
     } else if (LOCAL !== REMOTE) {
+      statusSteps.doneStep(false);
       throw new Error('Your local and remote branches have diverged. Please put them in sync. Aborting.');
     }
+    statusSteps.doneStep(true);
   }
 
 
   // AVOID DUPLICATE PUBLISHED VERSIONS
   const tags = await github.tags.fetch();
+  statusSteps.doneStep(true);
 
   let breakingIssuesUpdatedAfterLastTag = undefined;
   let lastVersionTagDateTime = undefined;
@@ -62,19 +81,16 @@ export default async () => {
   const unpublishedBreakingIssues = breakingIssuesUpdatedAfterLastTag.filter(i => !lastVersionTagDateTime || i.closed_at >= lastVersionTagDateTime);
   const isBreaking = unpublishedBreakingIssues.length > 0;
 
+  statusSteps.doneStep(true);
+
   // START RELEASE PROCESS
-
-  log(`RUN "npm version ${isBreaking ? 'minor' : 'patch'}"`);
   execSync(`npm version ${isBreaking ? 'minor' : 'patch'}`, { stdio });
+  statusSteps.doneStep(true);
 
-  log('RUN "npm publish"');
   execSync('npm publish', { stdio });
+  statusSteps.doneStep(true);
 
-  log('RUN "git push"');
   execSync('git push', { stdio });
-
-  log('RUN "git push --tags"');
   execSync('git push --tags', { stdio });
-
-  log(`\n Successfully released a new "${isBreaking ? 'BREAKING' : 'PATCH'}" version: "v${require('./package.json').version}"`);
+  statusSteps.doneStep(true);
 };
