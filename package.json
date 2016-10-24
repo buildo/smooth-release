@@ -10,11 +10,19 @@
     "watch": "rm -rf lib && babel src -d lib --watch",
     "start": "DEBUG=* node lib/index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FrancescoCioria/smooth-release.git"
+  },
   "bin": {
-    "releso": "./releso"
+    "smooth-release": "./smooth-release"
   },
   "author": "FrancescoCioria <firefelix@gmail.com>",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FrancescoCioria/smooth-release/issues"
+  },
+  "homepage": "https://github.com/FrancescoCioria/smooth-release#readme",
   "dependencies": {
     "lodash": "^4.16.4",
     "octokat": "^0.4.18",
