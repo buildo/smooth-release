@@ -1,7 +1,9 @@
 # Change Log
 
-## [Unreleased](https://github.com/FrancescoCioria/smooth-release/tree/HEAD)
-[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.1...HEAD)
+
+
+## [v1.0.2](https://github.com/FrancescoCioria/smooth-release/tree/v1.0.2)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.1...v1.0.2)
 
 #### Fixes (bugs & defects):
 
