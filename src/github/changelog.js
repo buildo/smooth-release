@@ -117,7 +117,8 @@ const createChangelogSection = ({ previousTag, tag, issues = [] }) => {
   return `${header}\n\n${content}`;
 };
 
-const x = async () => {
+
+export default async () => {
   // GET closed issues
   const closedIssues = (await getAllClosedIssues()).filter(i => !hasAtLeastOneLabel(i, config.github.changelog.ignoredLabels));
 
@@ -125,7 +126,7 @@ const x = async () => {
   const tags = await getAllTags();
 
   // ADD "created-at" info to each tag
-  const tagsWithCreatedAt = addCreatedAtInfoToTags(tags);
+  const tagsWithCreatedAt = await addCreatedAtInfoToTags(tags);
 
   // GROUP issues by tag
   const issuesGroupedByTag = groupIssuesByTag(closedIssues, tagsWithCreatedAt);
@@ -147,5 +148,3 @@ const x = async () => {
 
   return changelogMarkdown;
 };
-
-x();
