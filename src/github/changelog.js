@@ -1,35 +1,57 @@
 import fs from 'fs';
-import { find, findLast, some } from 'lodash';
-import { github, getGithubOwnerAndRepo, getRootFolderPath } from '../utils';
+import { find, findLast, some, sortBy } from 'lodash';
+import {
+  github,
+  getGithubOwnerAndRepo,
+  getRootFolderPath,
+  stagger,
+  log
+} from '../utils';
 import config from '../config';
 
-const getAllClosedIssues = async (acc = [], issues) => {
-  if (!issues) {
-    const firstPage = await github.issues.fetch({ state: 'closed' });
-    return getAllClosedIssues(acc.concat(firstPage), firstPage);
-  }
+const { owner, repo } = getGithubOwnerAndRepo();
 
-  if (issues.nextPage) {
+const getAllClosedIssues = async (acc = [], issues) => {
+  !acc.length && log('Getting closed issues');
+  acc.length && log(acc.length);
+
+  if (!issues) {
+    const firstPage = await github.issues.fetch({ state: 'closed', limit: 100 });
+    return getAllClosedIssues(acc.concat(firstPage), firstPage);
+  } else if (issues.nextPage) {
     const nextPage = await issues.nextPage();
     return getAllClosedIssues(acc.concat(nextPage), nextPage);
+  } else {
+    return acc;
   }
-
-  return acc;
 };
 
 const getAllTags = async (acc = [], tags) => {
+  !acc.length && log('Getting tags');
+  acc.length && log(acc.length);
+
   if (!tags) {
     const firstPage = await github.tags.fetch();
     return getAllTags(acc.concat(firstPage), firstPage);
-  }
-
-  if (tags.nextPage) {
+  } else if (tags.nextPage) {
     const nextPage = await tags.nextPage();
     return getAllTags(acc.concat(nextPage), nextPage);
+  } else {
+    return acc;
   }
-
-  return acc;
 };
+
+const addCreatedAtInfoToTags = async tags => {
+  return sortBy(await stagger(tags.map(tag => async () => {
+    const tagCommit = await github.commits(tag.commit.sha).fetch();
+    return {
+      ...tag,
+      createdAt: new Date(tagCommit.commit.author.date)
+    };
+  }), { maxOngoingMethods: 10, perSecond: 20 }), 'createdAt');
+};
+
+const hasAtLeastOneLabel = (issue, labels) => some(labels, label => find(issue.labels, { name: label }));
 
 const groupIssuesByTag = (closedIssues, tags) => {
   return closedIssues.reduce((issuesByTag, issue) => {
@@ -38,82 +60,92 @@ const groupIssuesByTag = (closedIssues, tags) => {
     if (tag) {
       return {
         ...issuesByTag,
-        [tag]: (issuesByTag[tag] || []).concat(issue)
+        [tag.name]: (issuesByTag[tag.name] || []).concat(issue)
       };
     }
 
     return {
       ...issuesByTag,
-      unreleased: issuesByTag.unreleased.concat(issue)
+      unreleased: (issuesByTag.unreleased || []).concat(issue)
     };
-  }, { unreleased: [] });
+  }, {});
 };
 
-const groupIssuesByType = (issues, types) => {
-  return issues.reduce((issuesByType, issue) => {
-    const type = find(types, type => some(type.labels, label => find(issue.labels, { name: label })));
+const groupIssuesByType = issues => {
+  const isBreaking = issue => hasAtLeastOneLabel(issue, config.github.changelog.breakingFeatures.labels);
+  const isBug = issue => hasAtLeastOneLabel(issue, config.github.changelog.bugs.labels);
 
-    if (type) {
+  return issues.reduce((issuesByType, issue) => {
+
+    if (isBreaking) {
       return {
         ...issuesByType,
-        [type.title]: (issuesByType[type.title] || []).concat(issue)
+        breaking: (issuesByType.breaking || []).concat(issue)
+      };
+    } else if (isBug) {
+      return {
+        ...issuesByType,
+        bug: (issuesByType.bug || []).concat(issue)
+      };
+    } else {
+      return {
+        ...issuesByType,
+        feature: (issuesByType.feature || []).concat(issue)
       };
     }
-
-    return {
-      ...issuesByType,
-      notBreakingFeatures: issuesByType.notBreakingFeatures.concat(issue)
-    };
-  }, { notBreakingFeatures: [] });
+  }, {});
 };
 
-export default async () => {
-  const closedIssues = await getAllClosedIssues();
+const createChangelogSection = ({ previousTag, tag, issues = [] }) => {
+  const tagLink = `## [${tag || 'Unreleased'}](https://github.com/${owner}/${repo}/tree/${tag || 'HEAD'})`;
+  const fullChangelogLink = `${previousTag ? `[Full Changelog](https://github.com/${owner}/${repo}/compare/${previousTag}...${tag || 'HEAD'})` : ''}`;
+  const header = `${tagLink}\n${fullChangelogLink}`;
+
+  if (issues.length === 0) {
+    return header;
+  }
+
+  const issuesGroupedByType = groupIssuesByType(issues);
+
+  const types = Object.keys(issuesGroupedByType);
+
+  const content = types.reduce((acc, type) => {
+    const issues = issuesGroupedByType[type].map(issue => `- ${issue.title} [#${issue.number}](${issue.url})`).join('\n');
+    return `${acc}\n\n${config.github.changelog[type].title}\n\n${issues}`;
+  }, '');
+
+  return `${header}\n\n${content}`;
+};
+
+const x = async () => {
+  // GET closed issues
+  const closedIssues = (await getAllClosedIssues()).filter(i => !hasAtLeastOneLabel(i, config.github.changelog.ignoredLabels));
+
+  // GET tags
   const tags = await getAllTags();
 
-  const tagsWithCreatedAt = await Promise.all(tags.map(async tag => {
-    const tagCommit = await github.commits(tag.commit.sha);
-    return {
-      ...tag,
-      createdAt: tagCommit.author.date
-    };
-  }));
+  // ADD "created-at" info to each tag
+  const tagsWithCreatedAt = addCreatedAtInfoToTags(tags);
 
-
-  // GROUP ISSUES BY TAG
+  // GROUP issues by tag
   const issuesGroupedByTag = groupIssuesByTag(closedIssues, tagsWithCreatedAt);
 
-  const createChangelogSection = (previousTag, tag, issues) => {
-    const { types } = config.github.changelog;
-    const { owner, repo } = getGithubOwnerAndRepo();
-    const header = `
-## [${tag || 'Unreleased'}](https://github.com/${owner}/${repo}/tree/${tag || 'HEAD'})
-${previousTag ? `[Full Changelog](https://github.com/buildo/react-components/compare/${previousTag.name}...${tag || 'HEAD'})` : ''}`;
-
-    const issuesGroupedByType = groupIssuesByType(issues, types);
-    const typeTitles = types.map(t => t.title);
-
-    const content = typeTitles.reduce((acc, typeTitle) => {
-      const issues = issuesGroupedByType[typeTitle].map(issue => `- ${issue.title} [#${issue.number}](${issue.url})`).join('\n');
-      return `${acc}\n\n${typeTitle}\n\n${issues}`;
-    }, '');
-
-    return `${header}\n\n${content}`;
-  };
-
+  // WRITE changelog for each tag
   const tagNames = tags.map(t => t.name);
+  const changelogSections = tagNames.map((tag, i) => (
+    createChangelogSection({ tag, previousTag: tagNames[i + 1], issues: issuesGroupedByTag[tag] })
+  ));
 
-  const changelogSections = tagNames.map((tag, i) => {
-    const tagIssues = issuesGroupedByTag[tag];
-    const previousTag = tagNames[i + 1];
+  // WRITE changelog for unreleased issues (without tag)
+  const unreleased = issuesGroupedByTag.unreleased ? createChangelogSection({ previousTag: tagNames[0], tag: null, issues: issuesGroupedByTag.unreleased }) : '';
 
-    return createChangelogSection(previousTag, tag, tagIssues);
-  });
-
-  const unreleased = issuesGroupedByTag.unreleased.length ? createChangelogSection(tagNames[0], null, issuesGroupedByTag.unreleased) : '';
-
+  // WRITE complete changelog
   const changelogMarkdown = `# Change Log\n\n${[unreleased].concat(changelogSections).join('\n\n')}`;
+
+  // SAVE changelog
   fs.writeFileSync(`${getRootFolderPath()}/${config.github.changelog.outputPath}`, changelogMarkdown);
 
   return changelogMarkdown;
 };
+
+x();

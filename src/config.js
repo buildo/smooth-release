@@ -11,12 +11,19 @@ const Config = t.interface({
   github: t.interface({
     token: t.maybe(t.String),
     changelog: t.interface({
-      outputPath: t.maybe(t.String),
-      ignore: t.maybe(t.list(t.String)),
-      types: t.list(t.interface({
+      outputPath: t.String,
+      ignoredLabels: t.maybe(t.list(t.String)),
+      breaking: t.interface({
         title: t.String,
-        labels: t.union([t.String, t.list(t.String)])
-      }))
+        labels: t.list(t.String)
+      }),
+      bug: t.interface({
+        title: t.String,
+        labels: t.list(t.String)
+      }),
+      feature: t.interface({
+        title: t.String
+      })
     })
   }),
   publish: t.maybe(t.interface({
