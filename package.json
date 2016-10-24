@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/FrancescoCioria/smooth-release#readme",
   "dependencies": {
+    "better-console": "^0.2.4",
     "lodash": "^4.16.4",
     "minimist": "^1.2.0",
     "octokat": "^0.4.18",

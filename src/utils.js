@@ -1,22 +1,15 @@
 import { execSync } from 'child_process';
-import debug from 'debug';
 import Octokat from 'octokat';
-import { startsWith, every, chunk } from 'lodash';
+import console from 'better-console';
+import { startsWith, every } from 'lodash';
 import config from './config';
-import t from 'tcomb';
 
 // LOGS
 
-export const log = debug('releso:log');
-log.log = console.log.bind(console); // eslint-disable-line no-console
-
-export const info = debug('releso:info');
-info.log = console.info.bind(console); // eslint-disable-line no-console
-
-export const warning = debug('releso:warning');
-warning.log = console.warn.bind(console); // eslint-disable-line no-console
-
-export const error = debug('releso:error');
+export const log = console.log;
+export const info = console.info;
+export const warning = console.warn;
+export const error = console.error;
 
 export const onError = e => {
   error(`\nError: ${e.message}`);
