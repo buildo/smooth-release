@@ -4,42 +4,13 @@ import {
   github,
   getGithubOwnerAndRepo,
   getRootFolderPath,
-  stagger,
-  log
+  stagger
 } from '../utils';
+import getAllTags from '../modules/getAllTags';
+import getAllClosedIssues from '../modules/getAllClosedIssues';
 import config from '../config';
 
 const { owner, repo } = getGithubOwnerAndRepo();
-
-const getAllClosedIssues = async (acc = [], issues) => {
-  !acc.length && log('Getting closed issues');
-  acc.length && log(acc.length);
-
-  if (!issues) {
-    const firstPage = await github.issues.fetch({ state: 'closed', limit: 100 });
-    return getAllClosedIssues(acc.concat(firstPage), firstPage);
-  } else if (issues.nextPage) {
-    const nextPage = await issues.nextPage();
-    return getAllClosedIssues(acc.concat(nextPage), nextPage);
-  } else {
-    return acc;
-  }
-};
-
-const getAllTags = async (acc = [], tags) => {
-  !acc.length && log('Getting tags');
-  acc.length && log(acc.length);
-
-  if (!tags) {
-    const firstPage = await github.tags.fetch();
-    return getAllTags(acc.concat(firstPage), firstPage);
-  } else if (tags.nextPage) {
-    const nextPage = await tags.nextPage();
-    return getAllTags(acc.concat(nextPage), nextPage);
-  } else {
-    return acc;
-  }
-};
 
 const addCreatedAtInfoToTags = async tags => {
   return sortBy(await stagger(tags.map(tag => async () => {
@@ -126,7 +97,7 @@ export default async () => {
   const tags = await getAllTags();
 
   // ADD "created-at" info to each tag
-  const tagsWithCreatedAt = await addCreatedAtInfoToTags(tags);
+  const tagsWithCreatedAt = tags.length ? await addCreatedAtInfoToTags(tags) : tags;
 
   // GROUP issues by tag
   const issuesGroupedByTag = groupIssuesByTag(closedIssues, tagsWithCreatedAt);

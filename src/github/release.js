@@ -1,9 +1,10 @@
 import { find } from 'lodash';
 import { github, log } from '../utils';
+import getAllTags from '../modules/getAllTags';
 
 export default async (packageJsonVersion) => {
-  const tags = await github.tags.fetch();
-  const tag = find(tags.data, { name: `v${packageJsonVersion}` });
+  const tags = await getAllTags();
+  const tag = find(tags, { name: `v${packageJsonVersion}` });
 
   if (tag) {
     const commit = await github.commits(tag.commit.sha).fetch();
