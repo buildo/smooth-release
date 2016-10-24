@@ -25,6 +25,7 @@
   "homepage": "https://github.com/FrancescoCioria/smooth-release#readme",
   "dependencies": {
     "lodash": "^4.16.4",
+    "minimist": "^1.2.0",
     "octokat": "^0.4.18",
     "tcomb": "^3.2.15"
   },

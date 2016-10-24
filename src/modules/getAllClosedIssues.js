@@ -3,7 +3,7 @@ import { github, log } from '../utils';
 let closedIssues = null;
 
 const getAllClosedIssues = async (acc = [], issues) => {
-  !acc.length && log('Getting closed issues');
+  !issues && log('Getting closed issues');
   acc.length && log(acc.length);
 
   if (!issues) {

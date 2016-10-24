@@ -3,7 +3,7 @@ import { github, log } from '../utils';
 let tags = null;
 
 const getAllTags = async (acc = [], tags) => {
-  !acc.length && log('Getting tags');
+  !tags && log('Getting tags');
   acc.length && log(acc.length);
 
   if (!tags) {

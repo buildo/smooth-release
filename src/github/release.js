@@ -1,5 +1,5 @@
 import { find } from 'lodash';
-import { github, log } from '../utils';
+import { github, getGithubOwnerAndRepo, log, error } from '../utils';
 import getAllTags from '../modules/getAllTags';
 
 export default async (packageJsonVersion) => {
@@ -8,8 +8,9 @@ export default async (packageJsonVersion) => {
 
   if (tag) {
     const commit = await github.commits(tag.commit.sha).fetch();
-    const changelogUrl = 'https://github.com/buildo/react-components/blob/master/CHANGELOG.md';
-    const tagISODate = commit.data.commit.author.date.slice(0, 10);
+    const { owner, repo } = getGithubOwnerAndRepo();
+    const changelogUrl = `https://github.com/${owner}/${repo}/blob/master/CHANGELOG.md`;
+    const tagISODate = commit.commit.author.date.slice(0, 10);
     const linkToChangelog = `${changelogUrl}#${tag.name.split('.').join('')}-${tagISODate}`;
 
     const release = {
@@ -22,14 +23,14 @@ export default async (packageJsonVersion) => {
       await github.releases.create(release);
       log(`\nSuccessfully created release "${tag.name}"\n`);
     } catch (e) {
-      if (e.data.message === 'Validation Failed') {
+      if (JSON.parse(e.message).message === 'Validation Failed') {
         log(`Release "${tag.name}" already exists`);
       } else {
-        throw new Error(e.data.message);
+        throw new Error(e.message);
       }
     }
   } else {
-    console.log('NO VERSION TAG... Aborting release');
+    error('NO VERSION TAG... Aborting release');
   }
 
 };
