@@ -10,7 +10,7 @@ const getAllClosedIssues = async (acc = [], issues) => {
     const nextPage = await issues.nextPage();
     return getAllClosedIssues(acc.concat(nextPage), nextPage);
   } else {
-    return acc;
+    return acc.filter(i => !i.pullRequest); // filter out PRs
   }
 };
 
