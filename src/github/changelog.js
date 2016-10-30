@@ -77,7 +77,7 @@ const createChangelogSection = ({ previousTag, tag, issues = [] }) => {
   const types = Object.keys(issuesGroupedByType);
 
   const content = types.reduce((acc, type) => {
-    const issues = issuesGroupedByType[type].map(issue => `- ${issue.title} [#${issue.number}](${issue.html_url})`).join('\n');
+    const issues = issuesGroupedByType[type].map(issue => `- ${issue.title} [#${issue.number}](${issue.htmlUrl})`).join('\n');
     return `${acc}\n\n${config.github.changelog[type].title}\n\n${issues}`;
   }, '');
 
