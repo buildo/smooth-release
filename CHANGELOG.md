@@ -1,6 +1,12 @@
 #  Change Log
 
+## [Unreleased](https://github.com/FrancescoCioria/smooth-release/tree/HEAD)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.3...HEAD)
 
+#### New features:
+
+- Default: changelog should be generated before running gh-release script [#10](https://github.com/FrancescoCioria/smooth-release/issues/10)
+- Changelog: push CHANGELOG.md after generating it [#8](https://github.com/FrancescoCioria/smooth-release/issues/8)
 
 ## [v1.0.3](https://github.com/FrancescoCioria/smooth-release/tree/v1.0.3)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.2...v1.0.3)
