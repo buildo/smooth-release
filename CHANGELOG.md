@@ -1,17 +1,19 @@
 #  Change Log
 
-## [Unreleased](https://github.com/FrancescoCioria/smooth-release/tree/HEAD)
-[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.3...HEAD)
+
+
+## [v1.0.4](https://github.com/FrancescoCioria/smooth-release/tree/v1.0.4) (2016-11-02)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.3...v1.0.4)
 
 #### New features:
 
 - Changelog: add date time to tags [#14](https://github.com/FrancescoCioria/smooth-release/issues/14)
-- Default: changelog should be generated before running gh-release script [#10](https://github.com/FrancescoCioria/smooth-release/issues/10)
 - Changelog: push CHANGELOG.md after generating it [#8](https://github.com/FrancescoCioria/smooth-release/issues/8)
 
 #### Fixes (bugs & defects):
 
 - Changelog: issues are placed in wrong tag section [#12](https://github.com/FrancescoCioria/smooth-release/issues/12)
+- Default: changelog should be generated before running gh-release script [#10](https://github.com/FrancescoCioria/smooth-release/issues/10)
 
 ## [v1.0.3](https://github.com/FrancescoCioria/smooth-release/tree/v1.0.3) (2016-10-30)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.2...v1.0.3)
