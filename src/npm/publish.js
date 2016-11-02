@@ -1,7 +1,7 @@
 import { execSync } from 'child_process';
 import status from 'node-status';
 import { find } from 'lodash';
-import { github, getCurrentBranch, isVersionTag } from '../utils';
+import { github, getCurrentBranch, isVersionTag, info } from '../utils';
 import config from '../config';
 
 const stdio = [process.stdin, process.stdout, process.stderr];
@@ -19,6 +19,7 @@ const statusSteps = status.addItem('publish', {
 });
 
 export default async () => {
+  info('Increase version and publish package on npm');
   status.start({ pattern: '{spinner.cyan}' });
 
   // ENFORCE BRANCH
@@ -93,4 +94,6 @@ export default async () => {
   execSync('git push', { stdio });
   execSync('git push --tags', { stdio });
   statusSteps.doneStep(true);
+
+  status.stop();
 };
