@@ -2,7 +2,7 @@ import fs from 'fs';
 import { execSync } from 'child_process';
 import stagger from 'staggerjs';
 import status from 'node-status';
-import { find, findLast, some, sortBy } from 'lodash';
+import { find, some, sortBy } from 'lodash';
 import { github, getGithubOwnerAndRepo, getRootFolderPath, info, warning } from '../utils';
 import getAllTags from '../modules/getAllTags';
 import getAllClosedIssues from '../modules/getAllClosedIssues';
@@ -11,20 +11,21 @@ import config from '../config';
 const { owner, repo } = getGithubOwnerAndRepo();
 
 const addCreatedAtInfoToTags = async tags => {
-  return sortBy(await stagger(tags.map(tag => async () => {
+  return await stagger(tags.map(tag => async () => {
     const tagCommit = await github.commits(tag.commit.sha).fetch();
     return {
       ...tag,
       createdAt: new Date(tagCommit.commit.author.date)
     };
-  }), { maxOngoingMethods: 10, perSecond: 20 }), 'createdAt');
+  }), { maxOngoingMethods: 10, perSecond: 20 });
 };
 
 const hasAtLeastOneLabel = (issue, labels) => some(labels, label => find(issue.labels, { name: label }));
 
 const groupIssuesByTag = (closedIssues, tags) => {
+  const tagsSortedAsc = sortBy(tags, ['createdAt']);
   return closedIssues.reduce((issuesByTag, issue) => {
-    const tag = findLast(tags, tag => tag.createdAt > issue.createdAt);
+    const tag = find(tagsSortedAsc, tag => tag.createdAt > issue.createdAt);
 
     if (tag) {
       return {

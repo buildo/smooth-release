@@ -29,7 +29,7 @@
     "minimist": "^1.2.0",
     "node-status": "^1.0.0",
     "octokat": "^0.4.18",
-    "staggerjs": "^1.0.0",
+    "staggerjs": "^1.1.0",
     "tcomb": "^3.2.15"
   },
   "devDependencies": {
