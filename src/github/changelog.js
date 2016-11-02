@@ -66,8 +66,9 @@ const groupIssuesByType = issues => {
 };
 
 const createChangelogSection = ({ previousTag, tag, issues = [] }) => {
-  const tagLink = `## [${tag || 'Unreleased'}](https://github.com/${owner}/${repo}/tree/${tag || 'HEAD'})`;
-  const fullChangelogLink = `${previousTag ? `[Full Changelog](https://github.com/${owner}/${repo}/compare/${previousTag}...${tag || 'HEAD'})` : ''}`;
+  const dateTime = tag ? ` (${tag.createdAt.toISOString().slice(0, 10)})` : '';
+  const tagLink = `## [${tag ? tag.name : 'Unreleased'}](https://github.com/${owner}/${repo}/tree/${tag ? tag.name : 'HEAD'})${dateTime}`;
+  const fullChangelogLink = previousTag ? `[Full Changelog](https://github.com/${owner}/${repo}/compare/${previousTag.name}...${tag ? tag.name : 'HEAD'})` : '';
   const header = `${tagLink}\n${fullChangelogLink}`;
 
   if (issues.length === 0) {
@@ -113,13 +114,12 @@ export default async () => {
   const issuesGroupedByTag = groupIssuesByTag(closedIssues, tagsWithCreatedAt);
 
   // WRITE changelog for each tag
-  const tagNames = tags.map(t => t.name);
-  const changelogSections = tagNames.map((tag, i) => (
-    createChangelogSection({ tag, previousTag: tagNames[i + 1], issues: issuesGroupedByTag[tag] })
+  const changelogSections = tagsWithCreatedAt.map((tag, i) => (
+    createChangelogSection({ tag, previousTag: tagsWithCreatedAt[i + 1], issues: issuesGroupedByTag[tag.name] })
   ));
 
   // WRITE changelog for unreleased issues (without tag)
-  const unreleased = issuesGroupedByTag.unreleased ? createChangelogSection({ previousTag: tagNames[0], tag: null, issues: issuesGroupedByTag.unreleased }) : '';
+  const unreleased = issuesGroupedByTag.unreleased ? createChangelogSection({ previousTag: tagsWithCreatedAt[0], tag: null, issues: issuesGroupedByTag.unreleased }) : '';
 
   // WRITE complete changelog
   const changelogMarkdown = `#  Change Log\n\n${[unreleased].concat(changelogSections).join('\n\n')}`;
