@@ -11,6 +11,9 @@ export const log = console.log;
 export const info = console.info;
 export const warning = console.warn;
 export const error = console.error;
+export const title = title => (
+  warning(`\n${title.toUpperCase()}\n${title.split('').map(() => '-').join('')}\n`)
+);
 
 export const onError = e => {
   status.stop();
