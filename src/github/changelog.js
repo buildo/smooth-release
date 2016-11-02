@@ -1,8 +1,9 @@
 import fs from 'fs';
+import { execSync } from 'child_process';
 import stagger from 'staggerjs';
 import status from 'node-status';
 import { find, findLast, some, sortBy } from 'lodash';
-import { github, getGithubOwnerAndRepo, getRootFolderPath, info } from '../utils';
+import { github, getGithubOwnerAndRepo, getRootFolderPath, info, warning } from '../utils';
 import getAllTags from '../modules/getAllTags';
 import getAllClosedIssues from '../modules/getAllClosedIssues';
 import config from '../config';
@@ -120,12 +121,23 @@ export default async () => {
   const unreleased = issuesGroupedByTag.unreleased ? createChangelogSection({ previousTag: tagNames[0], tag: null, issues: issuesGroupedByTag.unreleased }) : '';
 
   // WRITE complete changelog
-  const changelogMarkdown = `# Change Log\n\n${[unreleased].concat(changelogSections).join('\n\n')}`;
+  const changelogMarkdown = `#  Change Log\n\n${[unreleased].concat(changelogSections).join('\n\n')}`;
   statusSteps.doneStep(true);
 
   // SAVE changelog
   fs.writeFileSync(`${getRootFolderPath()}/${config.github.changelog.outputPath}`, changelogMarkdown);
-  statusSteps.doneStep(true);
+
+  // PUSH changes]
+  try {
+    execSync(`git add ${config.github.changelog.outputPath}`);
+    execSync('git commit -m "Update CHANGELOG.md"');
+    execSync('git push');
+    statusSteps.doneStep(true);
+  } catch (e) {
+    statusSteps.doneStep(false);
+    warning('   - CHANGELOG.md hasn\'t changed');
+  }
+
   status.stop();
 
   return changelogMarkdown;
