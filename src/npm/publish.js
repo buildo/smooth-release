@@ -5,7 +5,7 @@ import { find } from 'lodash';
 import { github, getCurrentBranch, isVersionTag, info, title, CustomError } from '../utils';
 import config from '../config';
 
-const stdio = [process.stdin, process.stdout, process.stderr];
+const stdio = [process.stdin, null, process.stderr];
 
 const runValidations = () => {
   const shouldRunValidations = config.publish.branch && config.publish.inSyncWithRemote;
@@ -111,8 +111,8 @@ const publish = (releaseInfo) => {
   info('\nIncrease version and publish package on npm');
   const statusSteps = status.addItem('publish', {
     steps: [
-      'Run "npm version"',
-      'Run "npm publish"',
+      'Run "npm preversion" and "npm version"',
+      'Run "npm prepublish" and "npm publish"',
       'Push changes and tags on GitHub'
     ]
   });
