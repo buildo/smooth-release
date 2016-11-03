@@ -12,7 +12,7 @@ const getLastVersionTag = async packageJsonVersion => {
     ]
   });
 
-  const tags = await getAllTags(true);
+  const tags = await getAllTags();
   statusSteps.doneStep(true);
 
   const tag = find(tags, { name: `v${packageJsonVersion}` });
