@@ -2,6 +2,8 @@ import { execSync } from 'child_process';
 import status from 'node-status';
 import Octokat from 'octokat';
 import console from 'better-console';
+// import readline from 'readline';
+// import inquirer from 'inquirer';
 import { startsWith, every } from 'lodash';
 import config from './config';
 
@@ -47,3 +49,50 @@ const octokat = config.github.token ? new Octokat({ token: config.github.token }
 
 const { owner, repo } = getGithubOwnerAndRepo();
 export const github = octokat.repos(`${owner}/${repo}`);
+
+
+// RL INTERFACE
+
+// function rlinterface() {
+//   const rl = readline.createInterface({
+//     input: process.stdin,
+//     output: process.stdout
+//   });
+//   return {
+//     confirmation: (message) => new Promise(resolve => {
+//       rl.question(`? ${message} (y/N)`, a => {
+//         console.log({ a });
+//         rl.close();
+//         resolve(a === 'y');
+//       });
+//     })
+//   };
+// }
+
+// function rlinterface() {
+//   return {
+//     question: (question, defaultInput) => new Promise((resolve) => {
+//       const qName = question.name || Math.random(); //('question_');
+//       const enhancedQ = {
+//         type: 'input',
+//         name: qName,
+//         default: defaultInput || null,
+//         ...question
+//       };
+//
+//       inquirer.prompt([enhancedQ], a => resolve(a[qName]));
+//     }),
+//     confirmation: (message, defaultInput) => new Promise((resolve) => {
+//       const enhancedQ = {
+//         message: `${message} (y/n)`,
+//         name: Math.random(), //('yes_or_no_question_'),
+//         type: 'input',
+//         default: defaultInput || 'n'
+//       };
+//
+//       inquirer.prompt([enhancedQ], a => resolve(a[enhancedQ.name]));
+//     })
+//   };
+// }
+
+// export const rl = rlinterface();
