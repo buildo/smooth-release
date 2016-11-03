@@ -14,7 +14,7 @@ const getAllTags = async (acc = [], tags) => {
   }
 };
 
-export default async () => {
-  tags = tags || await getAllTags();
+export default async (forceRefresh) => {
+  tags = (tags && !forceRefresh) ? tags : await getAllTags();
   return tags;
 };

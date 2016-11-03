@@ -15,7 +15,7 @@ const argv = (_argv['npm-publish'] || _argv['gh-release'] || _argv.changelog) ?
   defaultArgv;
 
 const main = async () => {
-  argv['npm-publish'] && await publish().catch(onError);
+  argv['npm-publish'] && await publish(packageJSON.version).catch(onError);
   argv.changelog && await changelog().catch(onError);
   argv['gh-release'] && await release(packageJSON.version).catch(onError);
 };
