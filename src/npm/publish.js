@@ -2,7 +2,7 @@ import { execSync } from 'child_process';
 import status from 'node-status';
 import semver from 'semver';
 import { find } from 'lodash';
-import { github, getCurrentBranch, isVersionTag, info, title } from '../utils';
+import { github, getCurrentBranch, isVersionTag, info, title, CustomError } from '../utils';
 import config from '../config';
 
 const stdio = [process.stdin, process.stdout, process.stderr];
@@ -23,7 +23,7 @@ const runValidations = () => {
     if (config.publish.branch !== null) {
       if (getCurrentBranch() !== config.publish.branch) {
         statusSteps.doneStep(false);
-        throw new Error(`You must be on "${config.publish.branch}" branch to perform this task. Aborting.`);
+        throw new CustomError(`You must be on "${config.publish.branch}" branch to perform this task. Aborting.`);
       }
       statusSteps.doneStep(true);
     }
@@ -38,13 +38,13 @@ const runValidations = () => {
 
       if (LOCAL !== REMOTE && LOCAL === BASE) {
         statusSteps.doneStep(false);
-        throw new Error('Your local branch is out-of-date. Please pull the latest remote changes. Aborting.');
+        throw new CustomError('Your local branch is out-of-date. Please pull the latest remote changes. Aborting.');
       } else if (LOCAL !== REMOTE && REMOTE === BASE) {
         statusSteps.doneStep(false);
-        throw new Error('Your local branch is ahead of its remote branch. Please push your local changes. Aborting.');
+        throw new CustomError('Your local branch is ahead of its remote branch. Please push your local changes. Aborting.');
       } else if (LOCAL !== REMOTE) {
         statusSteps.doneStep(false);
-        throw new Error('Your local and remote branches have diverged. Please put them in sync. Aborting.');
+        throw new CustomError('Your local and remote branches have diverged. Please put them in sync. Aborting.');
       }
       statusSteps.doneStep(true);
     }
@@ -79,7 +79,7 @@ const computeRelease = async (packageJsonVersion) => {
     const unpublishedIssues = issuesUpdatedAfterLastTag.filter(i => i.closedAt >= new Date(lastVersionTagDateTime));
 
     if (unpublishedIssues.length === 0) {
-      throw new Error('Can\'t find any issue closed after last publish. Are you sure there are new features to publish?');
+      throw new CustomError('Can\'t find any issue closed after last publish. Are you sure there are new features to publish?');
     }
     breakingIssuesUpdatedAfterLastTag = await github.issues.fetch({ labels: 'breaking', state: 'closed', since: lastVersionTagDateTime });
   } else {

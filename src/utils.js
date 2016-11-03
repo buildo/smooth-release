@@ -7,6 +7,18 @@ import console from 'better-console';
 import { startsWith, every } from 'lodash';
 import config from './config';
 
+// CUSTOM ERROR
+
+export function CustomError(message) {
+  this.name = 'CustomError';
+  this.message = message || '';
+  const error = new Error(this.message);
+  error.name = this.name;
+  this.stack = error.stack;
+}
+CustomError.prototype = Object.create(Error.prototype);
+
+
 // LOGS
 
 export const log = console.log;
@@ -19,7 +31,11 @@ export const title = title => (
 
 export const onError = e => {
   status.stop();
-  error('\n', e.stack);
+  if (e instanceof CustomError) {
+    error(`\nError: ${e.message}\n`);
+  } else {
+    error('\n', e.stack);
+  }
   process.exit(1);
 };
 
