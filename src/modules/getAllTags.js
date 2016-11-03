@@ -1,7 +1,5 @@
 import { github } from '../utils';
 
-let tags = null;
-
 const getAllTags = async (acc = [], tags) => {
   if (!tags) {
     const firstPage = await github.tags.fetch();
@@ -14,7 +12,6 @@ const getAllTags = async (acc = [], tags) => {
   }
 };
 
-export default async (forceRefresh) => {
-  tags = (tags && !forceRefresh) ? tags : await getAllTags();
-  return tags;
+export default async () => {
+  return await getAllTags();
 };
