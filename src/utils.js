@@ -19,7 +19,7 @@ export const title = title => (
 
 export const onError = e => {
   status.stop();
-  error(`\nError: ${e.message}\n`);
+  error('\n', e.stack);
   process.exit(1);
 };
 
