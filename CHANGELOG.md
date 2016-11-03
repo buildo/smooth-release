@@ -2,6 +2,13 @@
 
 
 
+## [v1.0.6](https://github.com/FrancescoCioria/smooth-release/tree/v1.0.6) (2016-11-03)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.5...v1.0.6)
+
+#### New features:
+
+- add missing "babel-runtime" dep [#20](https://github.com/FrancescoCioria/smooth-release/issues/20)
+
 ## [v1.0.5](https://github.com/FrancescoCioria/smooth-release/tree/v1.0.5) (2016-11-03)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.4...v1.0.5)
 
