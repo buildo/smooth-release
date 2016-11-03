@@ -5,10 +5,9 @@
   "main": "lib",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint src && eslint test",
+    "lint": "eslint src test",
     "build": "rm -rf lib && babel src -d lib",
-    "watch": "rm -rf lib && babel src -d lib --watch",
-    "start": "DEBUG=* node lib/index.js"
+    "watch": "npm run build -- --watch --source-maps inline"
   },
   "repository": {
     "type": "git",
