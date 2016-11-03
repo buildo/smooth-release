@@ -1,5 +1,9 @@
 node_modules
 npm-debug.log
+yarn-error.log
+**/.tags
+**/.tags1
+.smooth-releaserc
 .git
 test
 .eslintrc
