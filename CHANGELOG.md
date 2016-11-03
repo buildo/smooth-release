@@ -2,6 +2,17 @@
 
 
 
+## [v1.0.5](https://github.com/FrancescoCioria/smooth-release/tree/v1.0.5) (2016-11-03)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.4...v1.0.5)
+
+#### Fixes (bugs & defects):
+
+- Changelog: output is outdated [#18](https://github.com/FrancescoCioria/smooth-release/issues/18)
+
+#### New features:
+
+- Improve logs [#16](https://github.com/FrancescoCioria/smooth-release/issues/16)
+
 ## [v1.0.4](https://github.com/FrancescoCioria/smooth-release/tree/v1.0.4) (2016-11-02)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.3...v1.0.4)
 
