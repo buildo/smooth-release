@@ -3,7 +3,9 @@ import minimist from 'minimist';
 import publish from './npm/publish';
 import release from './github/release';
 import changelog from './github/changelog';
+import { askForToken } from './github/token';
 import { onError, getRootFolderPath } from './utils';
+import config from './config';
 
 const _argv = minimist(process.argv.slice(2));
 const packageJSON = JSON.parse(fs.readFileSync(`${getRootFolderPath()}/package.json`));
@@ -15,9 +17,15 @@ const argv = (_argv['npm-publish'] || _argv['gh-release'] || _argv.changelog) ?
   defaultArgv;
 
 const main = async () => {
-  argv['npm-publish'] && await publish(packageJSON.version).catch(onError);
-  argv.changelog && await changelog().catch(onError);
-  argv['gh-release'] && await release(packageJSON.version).catch(onError);
+  try {
+    !config.github.token && await askForToken();
+
+    argv['npm-publish'] && await publish(packageJSON.version);
+    argv.changelog && await changelog();
+    argv['gh-release'] && await release(packageJSON.version);
+  } catch (e) {
+    onError(e);
+  }
 };
 
 main();
