@@ -2,6 +2,9 @@ import fs from 'fs';
 import { execSync } from 'child_process';
 import t from 'tcomb';
 import { merge } from 'lodash';
+import getToken from './github/token';
+
+t.interface.strict = true;
 
 const getRootFolderPath = () => execSync('git rev-parse --show-toplevel', { encoding: 'utf8' }).trim();
 
@@ -44,6 +47,6 @@ const defaultConfig = {
   }
 };
 
-const config = merge(defaultConfig, relesorc);
+const config = merge(defaultConfig, relesorc, { github: { token: getToken() } });
 
 export default Config(config);

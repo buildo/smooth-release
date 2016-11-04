@@ -3,7 +3,7 @@ import status from 'node-status';
 import Octokat from 'octokat';
 import console from 'better-console';
 // import readline from 'readline';
-// import inquirer from 'inquirer';
+import inquirer from 'inquirer';
 import { startsWith, every } from 'lodash';
 import config from './config';
 
@@ -61,7 +61,7 @@ export const getGithubOwnerAndRepo = () => {
   return { owner, repo };
 };
 
-const octokat = config.github.token ? new Octokat({ token: config.github.token }) : new Octokat();
+const octokat = new Octokat({ token: config.github.token });
 
 const { owner, repo } = getGithubOwnerAndRepo();
 export const github = octokat.repos(`${owner}/${repo}`);
@@ -85,30 +85,29 @@ export const github = octokat.repos(`${owner}/${repo}`);
 //   };
 // }
 
-// function rlinterface() {
-//   return {
-//     question: (question, defaultInput) => new Promise((resolve) => {
-//       const qName = question.name || Math.random(); //('question_');
-//       const enhancedQ = {
-//         type: 'input',
-//         name: qName,
-//         default: defaultInput || null,
-//         ...question
-//       };
-//
-//       inquirer.prompt([enhancedQ], a => resolve(a[qName]));
-//     }),
-//     confirmation: (message, defaultInput) => new Promise((resolve) => {
-//       const enhancedQ = {
-//         message: `${message} (y/n)`,
-//         name: Math.random(), //('yes_or_no_question_'),
-//         type: 'input',
-//         default: defaultInput || 'n'
-//       };
-//
-//       inquirer.prompt([enhancedQ], a => resolve(a[enhancedQ.name]));
-//     })
-//   };
-// }
+function rlinterface() {
+  return {
+    question: (message, defaultInput) => new Promise((resolve) => {
+      const enhancedQ = {
+        message,
+        name: Math.random(),
+        type: 'input',
+        default: defaultInput || null
+      };
 
-// export const rl = rlinterface();
+      inquirer.prompt([enhancedQ], a => resolve(a[enhancedQ.name]));
+    }),
+    confirmation: (message, defaultInput) => new Promise((resolve) => {
+      const enhancedQ = {
+        message: `${message} (y/n)`,
+        name: Math.random(), //('yes_or_no_question_'),
+        type: 'input',
+        default: defaultInput || 'n'
+      };
+
+      inquirer.prompt([enhancedQ], a => resolve(a[enhancedQ.name]));
+    })
+  };
+}
+
+export const rl = rlinterface();
