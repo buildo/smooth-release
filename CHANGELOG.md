@@ -2,6 +2,13 @@
 
 
 
+## [v2.0.0](https://github.com/FrancescoCioria/smooth-release/tree/v2.0.0) (2016-11-04)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.6...v2.0.0)
+
+#### Breaking:
+
+- GitHub token should be global [#22](https://github.com/FrancescoCioria/smooth-release/issues/22)
+
 ## [v1.0.6](https://github.com/FrancescoCioria/smooth-release/tree/v1.0.6) (2016-11-03)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.5...v1.0.6)
 
