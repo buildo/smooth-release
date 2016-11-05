@@ -2,6 +2,13 @@
 
 
 
+## [v2.0.1](https://github.com/FrancescoCioria/smooth-release/tree/v2.0.1) (2016-11-05)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v2.0.0...v2.0.1)
+
+#### Fixes (bugs & defects):
+
+- gh-release always fails when run after publish [#24](https://github.com/FrancescoCioria/smooth-release/issues/24)
+
 ## [v2.0.0](https://github.com/FrancescoCioria/smooth-release/tree/v2.0.0) (2016-11-04)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.6...v2.0.0)
 
