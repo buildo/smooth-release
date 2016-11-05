@@ -1,6 +1,13 @@
 import { find } from 'lodash';
 import status from 'node-status';
-import { github, getGithubOwnerAndRepo, title, info, CustomError } from '../utils';
+import {
+  github,
+  getGithubOwnerAndRepo,
+  getPackageJsonVersion,
+  title,
+  info,
+  CustomError
+} from '../utils';
 import getAllTags from '../modules/getAllTags';
 
 const getLastVersionTag = async packageJsonVersion => {
@@ -65,11 +72,11 @@ const postRelease = async release => {
   }
 };
 
-export default async (packageJsonVersion) => {
+export default async () => {
   title('\nPost release on GitHub for latest npm-version tag');
   status.start({ pattern: '{spinner.cyan}' });
 
-  const tag = await getLastVersionTag(packageJsonVersion);
+  const tag = await getLastVersionTag(getPackageJsonVersion());
 
   if (tag) {
     const release = await computeRelease(tag);

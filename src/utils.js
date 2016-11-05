@@ -1,4 +1,5 @@
 import { execSync } from 'child_process';
+import fs from 'fs';
 import status from 'node-status';
 import Octokat from 'octokat';
 import console from 'better-console';
@@ -50,6 +51,9 @@ export const isVersionTag = tag => (
 
 export const getRootFolderPath = () => execSync('git rev-parse --show-toplevel', { encoding: 'utf8' }).trim();
 
+export const getPackageJsonVersion = () => (
+  JSON.parse(fs.readFileSync(`${getRootFolderPath()}/package.json`)).version
+);
 
 // OCTOKAT
 

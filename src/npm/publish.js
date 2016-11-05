@@ -2,7 +2,15 @@ import { execSync } from 'child_process';
 import status from 'node-status';
 import semver from 'semver';
 import { find } from 'lodash';
-import { github, getCurrentBranch, isVersionTag, info, title, CustomError } from '../utils';
+import {
+  github,
+  getCurrentBranch,
+  isVersionTag,
+  getPackageJsonVersion,
+  info,
+  title,
+  CustomError
+} from '../utils';
 import config from '../config';
 
 const stdio = [process.stdin, null, process.stderr];
@@ -129,13 +137,13 @@ const publish = (releaseInfo) => {
   statusSteps.doneStep(true);
 };
 
-export default async (packageJsonVersion) => {
+export default async () => {
   title('Increase version and publish package on npm');
   status.start({ pattern: '{spinner.cyan}' });
 
   runValidations();
 
-  const releaseInfo = await computeRelease(packageJsonVersion);
+  const releaseInfo = await computeRelease(getPackageJsonVersion());
 
   publish(releaseInfo);
 
