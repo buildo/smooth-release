@@ -8,9 +8,9 @@ import config from './config';
 
 const _argv = minimist(process.argv.slice(2));
 
-const defaultArgv = { 'npm-publish': true, 'gh-release': true, changelog: true };
+const defaultArgv = { 'npm-publish': true, 'gh-release': true, changelog: true, 'gh-release-all': false };
 
-const argv = (_argv['npm-publish'] || _argv['gh-release'] || _argv.changelog) ?
+const argv = (_argv['npm-publish'] || _argv['gh-release'] || _argv['gh-release-all'] || _argv.changelog) ?
   _argv :
   defaultArgv;
 
@@ -20,7 +20,8 @@ const main = async () => {
 
     argv['npm-publish'] && await publish();
     argv.changelog && await changelog();
-    argv['gh-release'] && await release();
+    argv['gh-release'] && await release({ all: false });
+    argv['gh-release-all'] && await release({ all: true });
   } catch (e) {
     onError(e);
   }
