@@ -2,6 +2,13 @@
 
 
 
+## [v2.0.2](https://github.com/FrancescoCioria/smooth-release/tree/v2.0.2) (2016-11-10)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v2.0.1...v2.0.2)
+
+#### New features:
+
+- gh-release should optionally add release for every version tag [#26](https://github.com/FrancescoCioria/smooth-release/issues/26)
+
 ## [v2.0.1](https://github.com/FrancescoCioria/smooth-release/tree/v2.0.1) (2016-11-05)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v2.0.0...v2.0.1)
 
