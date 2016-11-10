@@ -1,5 +1,6 @@
-import { find } from 'lodash';
+import { find, startsWith } from 'lodash';
 import status from 'node-status';
+import stagger from 'staggerjs';
 import {
   github,
   getGithubOwnerAndRepo,
@@ -9,6 +10,24 @@ import {
   CustomError
 } from '../utils';
 import getAllTags from '../modules/getAllTags';
+
+const getAllVersionTags = async () => {
+  info('Get all npm version "tags"');
+  const statusSteps = status.addItem('allVersionTags', {
+    steps: [
+      'Get all tags from GitHub',
+      'filter npm-version tags'
+    ]
+  });
+
+  const tags = await getAllTags();
+  statusSteps.doneStep(true);
+
+  const versionTags = tags.filter(t => startsWith(t.name, 'v'));
+  statusSteps.doneStep(versionTags.length > 0);
+
+  return versionTags;
+};
 
 const getLastVersionTag = async packageJsonVersion => {
   info('Get last npm version "tag"');
@@ -72,16 +91,26 @@ const postRelease = async release => {
   }
 };
 
-export default async () => {
-  title('\nPost release on GitHub for latest npm-version tag');
+export default async ({ all }) => {
+  title(`\nPost release on GitHub for ${all ? 'every' : 'latest'} npm-version tag`);
   status.start({ pattern: '{spinner.cyan}' });
 
-  const tag = await getLastVersionTag(getPackageJsonVersion());
+  if (all) {
+    const versionTags = await getAllVersionTags();
 
-  if (tag) {
-    const release = await computeRelease(tag);
+    await stagger(versionTags.map(tag => async () => {
+      const release = await computeRelease(tag);
+      await postRelease(release);
+    }), { maxOngoingMethods: 1 });
 
-    await postRelease(release);
+  } else {
+    const tag = await getLastVersionTag(getPackageJsonVersion());
+
+    if (tag) {
+      const release = await computeRelease(tag);
+
+      await postRelease(release);
+    }
   }
 
   status.stop();
