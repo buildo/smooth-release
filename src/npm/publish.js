@@ -18,12 +18,17 @@ import config from '../config';
 const stdio = [process.stdin, null, process.stderr];
 
 const runValidations = () => {
-  const shouldRunValidations = config.publish.branch && config.publish.inSyncWithRemote;
+  const shouldRunValidations = (
+    config.publish.branch ||
+    config.publish.inSyncWithRemote ||
+    config.publish.noUncommittedChanges
+  );
 
   if (shouldRunValidations) {
     info('Run validations');
     status.addSteps([
       config.publish.branch && 'Validate branch',
+      config.publish.noUncommittedChanges && 'Validate uncommitted changes',
       config.publish.inSyncWithRemote && 'Validate sync with remote'
     ].filter(x => x));
 
@@ -32,6 +37,15 @@ const runValidations = () => {
       if (getCurrentBranch() !== config.publish.branch) {
         status.doneStep(false);
         throw new CustomError(`You must be on "${config.publish.branch}" branch to perform this task. Aborting.`);
+      }
+      status.doneStep(true);
+    }
+
+    // ENFORCE NO UNCOMMITTED CHANGES
+    if (config.publish.noUncommittedChanges) {
+      if (/^([ADRM]| [ADRM])/m.test(execSync('git status --porcelain'))) {
+        status.doneStep(false);
+        throw new CustomError('You have uncommited changes in your working tree. Aborting.');
       }
       status.doneStep(true);
     }
