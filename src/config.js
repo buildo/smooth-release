@@ -8,7 +8,10 @@ t.interface.strict = true;
 
 const getRootFolderPath = () => execSync('git rev-parse --show-toplevel', { encoding: 'utf8' }).trim();
 
-const relesorc = JSON.parse(fs.readFileSync(`${getRootFolderPath()}/.smooth-releaserc`));
+const smoothReleaseRCPath = `${getRootFolderPath()}/.smooth-releaserc`;
+const smoothReleaseRC = fs.existsSync(smoothReleaseRCPath) ?
+  JSON.parse(fs.readFileSync(smoothReleaseRCPath)) :
+  {};
 
 const Config = t.interface({
   github: t.interface({
@@ -63,6 +66,6 @@ const defaultConfig = {
   }
 };
 
-const config = merge(defaultConfig, relesorc, { github: { token: getToken() } });
+const config = merge(defaultConfig, smoothReleaseRC, { github: { token: getToken() } });
 
 export default Config(config);
