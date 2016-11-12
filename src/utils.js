@@ -3,7 +3,6 @@ import fs from 'fs';
 import elegantStatus from 'elegant-status';
 import Octokat from 'octokat';
 import console from 'better-console';
-// import readline from 'readline';
 import inquirer from 'inquirer';
 import { startsWith, every } from 'lodash';
 import config from './config';
@@ -14,22 +13,21 @@ const Status = () => {
   let steps = [];
   let done = null;
 
-  const runStep = () => {
+  const runNextStep = () => {
     if (steps.length > 0) {
       done = elegantStatus(steps.shift());
-    } else {
-      done = null;
     }
   };
 
   return {
     addSteps: newSteps => {
       steps = steps.concat(newSteps);
-      runStep();
+      !done && runNextStep(); // if idle run first step in the list
     },
     doneStep: res => {
       done(res);
-      runStep();
+      done = null;
+      runNextStep();
     },
     stop: () => {
       steps = [];
