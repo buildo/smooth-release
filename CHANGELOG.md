@@ -2,6 +2,13 @@
 
 
 
+## [v4.0.1](https://github.com/FrancescoCioria/smooth-release/tree/v4.0.1) (2016-11-12)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v4.0.0...v4.0.1)
+
+#### Fixes (bugs & defects):
+
+- only first "info" subtitle is logged! [#40](https://github.com/FrancescoCioria/smooth-release/issues/40)
+
 ## [v4.0.0](https://github.com/FrancescoCioria/smooth-release/tree/v4.0.0) (2016-11-12)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v3.0.0...v4.0.0)
 
