@@ -106,43 +106,27 @@ export const github = octokat.repos(`${owner}/${repo}`);
 
 // RL INTERFACE
 
-// function rlinterface() {
-//   const rl = readline.createInterface({
-//     input: process.stdin,
-//     output: process.stdout
-//   });
-//   return {
-//     confirmation: (message) => new Promise(resolve => {
-//       rl.question(`? ${message} (y/N)`, a => {
-//         console.log({ a });
-//         rl.close();
-//         resolve(a === 'y');
-//       });
-//     })
-//   };
-// }
-
 function rlinterface() {
   return {
     question: (message, defaultInput) => new Promise((resolve) => {
-      const enhancedQ = {
+      const question = {
         message,
-        name: Math.random(),
+        name: Date.now(),
         type: 'input',
         default: defaultInput || null
       };
 
-      inquirer.prompt([enhancedQ], a => resolve(a[enhancedQ.name]));
+      inquirer.prompt([question], a => resolve(a[question.name]));
     }),
     confirmation: (message, defaultInput) => new Promise((resolve) => {
-      const enhancedQ = {
+      const question = {
         message: `${message} (y/n)`,
-        name: Math.random(), //('yes_or_no_question_'),
+        name: Date.now(),
         type: 'input',
         default: defaultInput || 'n'
       };
 
-      inquirer.prompt([enhancedQ], a => resolve(a[enhancedQ.name]));
+      inquirer.prompt([question], a => resolve(a[question.name] === 'y'));
     })
   };
 }
