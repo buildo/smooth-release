@@ -1,7 +1,13 @@
 #  Change Log
 
-## [Unreleased](https://github.com/FrancescoCioria/smooth-release/tree/HEAD)
-[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v2.0.2...HEAD)
+
+
+## [v3.0.0](https://github.com/FrancescoCioria/smooth-release/tree/v3.0.0) (2016-11-12)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v2.0.2...v3.0.0)
+
+#### Breaking:
+
+- Add confirmation step before publishing to npm [#30](https://github.com/FrancescoCioria/smooth-release/issues/30)
 
 #### New features:
 
@@ -31,7 +37,7 @@
 ## [v1.0.6](https://github.com/FrancescoCioria/smooth-release/tree/v1.0.6) (2016-11-03)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.5...v1.0.6)
 
-#### New features:
+#### Fixes (bugs & defects):
 
 - add missing "babel-runtime" dep [#20](https://github.com/FrancescoCioria/smooth-release/issues/20)
 
@@ -52,12 +58,15 @@
 #### New features:
 
 - Changelog: add date time to tags [#14](https://github.com/FrancescoCioria/smooth-release/issues/14)
-- Changelog: push CHANGELOG.md after generating it [#8](https://github.com/FrancescoCioria/smooth-release/issues/8)
 
 #### Fixes (bugs & defects):
 
 - Changelog: issues are placed in wrong tag section [#12](https://github.com/FrancescoCioria/smooth-release/issues/12)
 - Default: changelog should be generated before running gh-release script [#10](https://github.com/FrancescoCioria/smooth-release/issues/10)
+
+#### Breaking:
+
+- Changelog: push CHANGELOG.md after generating it [#8](https://github.com/FrancescoCioria/smooth-release/issues/8)
 
 ## [v1.0.3](https://github.com/FrancescoCioria/smooth-release/tree/v1.0.3) (2016-10-30)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v1.0.2...v1.0.3)
