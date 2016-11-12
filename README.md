@@ -95,4 +95,4 @@ You can see an example by looking at any release on this repo: https://github.co
 
 If you want to change parts of it you can define a JSON config file in the root directory of your project named `.smooth-releaserc`.
 
-The file will be [merged](https://lodash.com/docs/4.16.6#merge) with `defaultConfig`.
+The file will be recursively merged into `defaultConfig` (NB: arrays are replaced, not merged!).
