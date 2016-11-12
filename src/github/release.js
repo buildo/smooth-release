@@ -1,5 +1,4 @@
 import { find, startsWith } from 'lodash';
-import status from 'node-status';
 import stagger from 'staggerjs';
 import {
   github,
@@ -7,60 +6,55 @@ import {
   getPackageJsonVersion,
   title,
   info,
+  status,
   CustomError
 } from '../utils';
 import getAllTags from '../modules/getAllTags';
 
 const getAllVersionTags = async () => {
   info('Get all npm version "tags"');
-  const statusSteps = status.addItem('allVersionTags', {
-    steps: [
-      'Get all tags from GitHub',
-      'filter npm-version tags'
-    ]
-  });
+  status.addSteps([
+    'Get all tags from GitHub',
+    'filter npm-version tags'
+  ]);
 
   const tags = await getAllTags();
-  statusSteps.doneStep(true);
+  status.doneStep(true);
 
   const versionTags = tags.filter(t => startsWith(t.name, 'v'));
-  statusSteps.doneStep(versionTags.length > 0);
+  status.doneStep(versionTags.length > 0);
 
   return versionTags;
 };
 
 const getLastVersionTag = async packageJsonVersion => {
   info('Get last npm version "tag"');
-  const statusSteps = status.addItem('lastVersionTag', {
-    steps: [
-      'Get all tags from GitHub',
-      'Find last npm-version tag'
-    ]
-  });
+  status.addSteps([
+    'Get all tags from GitHub',
+    'Find last npm-version tag'
+  ]);
 
   const tags = await getAllTags();
-  statusSteps.doneStep(true);
+  status.doneStep(true);
 
   const tag = find(tags, { name: `v${packageJsonVersion}` });
-  statusSteps.doneStep(!!tag);
+  status.doneStep(!!tag);
 
   return tag || null;
 };
 
 const computeRelease = async tag => {
   info('\nCompute release');
-  const statusSteps = status.addItem('release', {
-    steps: [
-      'Get tag\'s creation datetime from GitHub',
-      'Compute "release" object'
-    ]
-  });
+  status.addSteps([
+    'Get tag\'s creation datetime from GitHub',
+    'Compute "release" object'
+  ]);
 
   const commit = await github.commits(tag.commit.sha).fetch();
   const { owner, repo } = getGithubOwnerAndRepo();
   const changelogUrl = `https://github.com/${owner}/${repo}/blob/master/CHANGELOG.md`;
   const tagISODate = commit.commit.author.date.slice(0, 10);
-  statusSteps.doneStep(true);
+  status.doneStep(true);
 
   const linkToChangelog = `${changelogUrl}#${tag.name.split('.').join('')}-${tagISODate}`;
   const release = {
@@ -68,32 +62,29 @@ const computeRelease = async tag => {
     name: tag.name,
     body: `See [CHANGELOG.md](${linkToChangelog}) for details about this release.`
   };
-  statusSteps.doneStep(true);
+  status.doneStep(true);
 
   return release;
 };
 
 const postRelease = async release => {
   info('\nCreate new release on GitHub');
-  const statusSteps = status.addItem('postRelease', {
-    steps: [
-      'Post release on GitHub'
-    ]
-  });
+  status.addSteps([
+    'Post release on GitHub'
+  ]);
 
   try {
     await github.releases.create(release);
-    statusSteps.doneStep(true);
+    status.doneStep(true);
   } catch (e) {
     const { message } = JSON.parse(e.message);
-    statusSteps.doneStep(false);
+    status.doneStep(false);
     throw new CustomError(message === 'Validation Failed' ? `Release "${release.tag_name}" already exists` : message);
   }
 };
 
 export default async ({ all }) => {
   title(`\nPost release on GitHub for ${all ? 'every' : 'latest'} npm-version tag`);
-  status.start({ pattern: '{spinner.cyan}' });
 
   if (all) {
     const versionTags = await getAllVersionTags();
