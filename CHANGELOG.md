@@ -1,6 +1,11 @@
 #  Change Log
 
+## [Unreleased](https://github.com/FrancescoCioria/smooth-release/tree/HEAD)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v2.0.2...HEAD)
 
+#### New features:
+
+- Replace node-status with elegant-status [#28](https://github.com/FrancescoCioria/smooth-release/issues/28)
 
 ## [v2.0.2](https://github.com/FrancescoCioria/smooth-release/tree/v2.0.2) (2016-11-10)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v2.0.1...v2.0.2)
