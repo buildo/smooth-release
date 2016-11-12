@@ -1,4 +1,3 @@
-import { execSync } from 'child_process';
 import semver from 'semver';
 import { find, sortBy, range, some } from 'lodash';
 import {
@@ -11,13 +10,14 @@ import {
   log,
   CustomError,
   status,
-  rl
+  rl,
+  exec
 } from '../utils';
 import config from '../config';
 
 const stdio = [process.stdin, null, process.stderr];
 
-const runValidations = () => {
+const runValidations = async () => {
   const shouldRunValidations = some(config.publish);
 
   if (shouldRunValidations) {
@@ -37,7 +37,7 @@ const runValidations = () => {
     if (config.publish.noUncommittedChanges) {
       status.addSteps(['Validate uncommitted changes']);
 
-      if (/^([ADRM]| [ADRM])/m.test(execSync('git status --porcelain'))) {
+      if (/^([ADRM]| [ADRM])/m.test(await exec('git status --porcelain'))) {
         throw new CustomError('You have uncommited changes in your working tree. Aborting.');
       }
       status.doneStep(true);
@@ -47,7 +47,7 @@ const runValidations = () => {
     if (config.publish.noUntrackedFiles) {
       status.addSteps(['Validate untracked files']);
 
-      if (/^\?\?/m.test(execSync('git status --porcelain'))) {
+      if (/^\?\?/m.test(await exec('git status --porcelain'))) {
         throw new CustomError('You have untracked files in your working tree. Aborting.');
       }
       status.doneStep(true);
@@ -57,11 +57,11 @@ const runValidations = () => {
     if (config.publish.inSyncWithRemote) {
       status.addSteps(['Validate sync with remote']);
 
-      execSync('git fetch');
+      await exec('git fetch');
 
-      const LOCAL = execSync('git rev-parse @', { encoding: 'utf8' }).trim();
-      const REMOTE = execSync('git rev-parse @{u}', { encoding: 'utf8' }).trim();
-      const BASE = execSync('git merge-base @ @{u}', { encoding: 'utf8' }).trim();
+      const LOCAL = (await exec('git rev-parse @', { encoding: 'utf8' })).trim();
+      const REMOTE = (await exec('git rev-parse @{u}', { encoding: 'utf8' })).trim();
+      const BASE = (await exec('git merge-base @ @{u}', { encoding: 'utf8' })).trim();
 
       if (LOCAL !== REMOTE && LOCAL === BASE) {
         throw new CustomError('Your local branch is out-of-date. Please pull the latest remote changes. Aborting.');
@@ -147,7 +147,7 @@ const confirmation = async releaseInfo => {
   }
 };
 
-const publish = (releaseInfo) => {
+const publish = async (releaseInfo) => {
   info('\nIncrease version and publish package on npm');
   status.addSteps([
     'Run "npm preversion" and "npm version"',
@@ -156,25 +156,25 @@ const publish = (releaseInfo) => {
   ]);
 
   // START PUBLISH PROCESS
-  execSync(`npm version v${releaseInfo.version}`, { stdio });
+  await exec(`npm version v${releaseInfo.version}`, { stdio });
   status.doneStep(true);
 
-  execSync('npm publish', { stdio });
+  await exec('npm publish', { stdio });
   status.doneStep(true);
 
-  execSync('git push', { stdio });
-  execSync('git push --tags', { stdio });
+  await exec('git push', { stdio });
+  await exec('git push --tags', { stdio });
   status.doneStep(true);
 };
 
 export default async () => {
   title('Increase version and publish package on npm');
 
-  runValidations();
+  await runValidations();
 
   const releaseInfo = await computeRelease(getPackageJsonVersion());
 
   await confirmation(releaseInfo);
 
-  publish(releaseInfo);
+  await publish(releaseInfo);
 };

@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { exec as _exec, execSync } from 'child_process';
 import fs from 'fs';
 import elegantStatus from 'elegant-status';
 import Octokat from 'octokat';
@@ -37,6 +37,21 @@ const Status = () => {
 };
 
 export const status = Status();
+
+
+// EXEC INTERFACE
+
+export const exec = (command, settings) => {
+  return new Promise((resolve, reject) => {
+    _exec(command, settings, (error, stdout) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(stdout);
+      }
+    });
+  });
+};
 
 
 // CUSTOM ERROR
