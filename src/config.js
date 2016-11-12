@@ -31,7 +31,8 @@ const Config = t.interface({
   }),
   publish: t.maybe(t.interface({
     branch: t.maybe(t.String),
-    inSyncWithRemote: t.maybe(t.Boolean)
+    inSyncWithRemote: t.maybe(t.Boolean),
+    noUncommittedChanges: t.maybe(t.Boolean)
   }))
 });
 
@@ -43,7 +44,8 @@ const defaultConfig = {
   },
   publish: {
     branch: 'master',
-    inSyncWithRemote: true
+    inSyncWithRemote: true,
+    noUncommittedChanges: true
   }
 };
 
