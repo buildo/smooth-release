@@ -1,21 +1,24 @@
 import fs from 'fs';
 import { execSync } from 'child_process';
 import t from 'tcomb';
-import { merge } from 'lodash';
+import { mergeWith } from 'lodash';
 import getToken from './github/token';
 
 t.interface.strict = true;
 
 const getRootFolderPath = () => execSync('git rev-parse --show-toplevel', { encoding: 'utf8' }).trim();
 
-const relesorc = JSON.parse(fs.readFileSync(`${getRootFolderPath()}/.smooth-releaserc`));
+const smoothReleaseRCPath = `${getRootFolderPath()}/.smooth-releaserc`;
+const smoothReleaseRC = fs.existsSync(smoothReleaseRCPath) ?
+  JSON.parse(fs.readFileSync(smoothReleaseRCPath)) :
+  {};
 
 const Config = t.interface({
   github: t.interface({
     token: t.maybe(t.String),
     changelog: t.interface({
       outputPath: t.String,
-      ignoredLabels: t.maybe(t.list(t.String)),
+      ignoredLabels: t.list(t.String),
       breaking: t.interface({
         title: t.String,
         labels: t.list(t.String)
@@ -29,18 +32,30 @@ const Config = t.interface({
       })
     })
   }),
-  publish: t.maybe(t.interface({
+  publish: t.interface({
     branch: t.maybe(t.String),
-    inSyncWithRemote: t.maybe(t.Boolean),
-    noUncommittedChanges: t.maybe(t.Boolean),
-    noUntrackedFiles: t.maybe(t.Boolean)
-  }))
+    inSyncWithRemote: t.Boolean,
+    noUncommittedChanges: t.Boolean,
+    noUntrackedFiles: t.Boolean
+  })
 });
 
 const defaultConfig = {
   github: {
     changelog: {
-      outputPath: './CHANGELOG.md'
+      outputPath: './CHANGELOG.md',
+      ignoredLabels: ['DX', 'invalid', 'discussion'],
+      bug: {
+        title: '#### Fixes (bugs & defects):',
+        labels: ['bug', 'defect']
+      },
+      breaking: {
+        title: '#### Breaking:',
+        labels: ['breaking']
+      },
+      feature: {
+        title: '#### New features:'
+      }
     }
   },
   publish: {
@@ -51,6 +66,9 @@ const defaultConfig = {
   }
 };
 
-const config = merge(defaultConfig, relesorc, { github: { token: getToken() } });
+const config = mergeWith(
+  defaultConfig, smoothReleaseRC, { github: { token: getToken() } },
+  (a, b) => t.Array.is(a) ? b : undefined
+);
 
 export default Config(config);

@@ -5,8 +5,10 @@ Smart CLI utility to **safely** and **automatically** do every step to release a
 `npm i -g smooth-release`
 
 ## Usage
-1. Add [`.smooth-releaserc`](https://github.com/FrancescoCioria/smooth-release#smooth-releaserc) in your root folder
-2. Run `smooth-release` from your root folder
+Simply run `smooth-release` from your root folder, that's all :)
+
+#### Custom settings
+Every config value used by `smooth-release` is overridable: jump to [`.smooth-releaserc`](https://github.com/FrancescoCioria/smooth-release#smooth-releaserc) section to know more about it.
 
 ## What it does
 `smooth-release` does three main activities:
@@ -61,30 +63,36 @@ The release is named as the tag (ex: v1.2.3) and the body contains a link to the
 You can see an example by looking at any release on this repo: https://github.com/FrancescoCioria/smooth-release/releases.
 
 ## `.smooth-releaserc`
-Each project **must** have a JSON config file in its root folder named `.smooth-releaserc`.
+`smooth-release` comes with a safe default for each config value. This is the `defaultConfig` JSON used by `smooth-release`:
 
-The file should be structured as follows:
 ```js
 {
-  "github": {
-    "changelog": {
-      "ignoredLabels": ["invalid", "DX", "..."],
-      "bug": {
-        "title": "#### Fixes (bugs & defects):", // (or whatever you choose)
-        "labels": ["bug", "defect", "..."]
+  github: {
+    changelog: {
+      outputPath: './CHANGELOG.md',
+      ignoredLabels: ['DX', 'invalid', 'discussion'],
+      bug: {
+        title: '#### Fixes (bugs & defects):',
+        labels: ['bug', 'defect']
       },
-      "breaking": {
-        "title": "#### Breaking:", // (or whatever you choose)
-        "labels": ["breaking", "..."]
+      breaking: {
+        title: '#### Breaking:',
+        labels: ['breaking']
       },
-      "feature": {
-        "title": "#### New features:" // (or whatever you choose)
+      feature: {
+        title: '#### New features:'
       }
     }
   },
-  "publish": {
-    "branch": "master", // default: "master"; set to "false" to turn off validation
-    "inSyncWithRemote": true // set to "false" to turn off validation
+  publish: {
+    branch: 'master',
+    inSyncWithRemote: true,
+    noUncommittedChanges: true,
+    noUntrackedFiles: true
   }
 }
 ```
+
+If you want to change parts of it you can define a JSON config file in the root directory of your project named `.smooth-releaserc`.
+
+The file will be recursively merged into `defaultConfig` (NB: arrays are replaced, not merged!).
