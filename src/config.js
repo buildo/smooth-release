@@ -40,7 +40,19 @@ const Config = t.interface({
 const defaultConfig = {
   github: {
     changelog: {
-      outputPath: './CHANGELOG.md'
+      outputPath: './CHANGELOG.md',
+      ignoredLabels: ['DX', 'invalid', 'discussion'],
+      bug: {
+        title: '#### Fixes (bugs & defects):',
+        labels: ['bug', 'defect']
+      },
+      breaking: {
+        title: '#### Breaking:',
+        labels: ['breaking']
+      },
+      feature: {
+        title: '#### New features:'
+      }
     }
   },
   publish: {
