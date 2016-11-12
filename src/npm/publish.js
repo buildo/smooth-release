@@ -32,7 +32,6 @@ const runValidations = () => {
     // ENFORCE BRANCH
     if (config.publish.branch !== null) {
       if (getCurrentBranch() !== config.publish.branch) {
-        status.doneStep(false);
         throw new CustomError(`You must be on "${config.publish.branch}" branch to perform this task. Aborting.`);
       }
       status.doneStep(true);
@@ -41,7 +40,6 @@ const runValidations = () => {
     // ENFORCE NO UNCOMMITTED CHANGES
     if (config.publish.noUncommittedChanges) {
       if (/^([ADRM]| [ADRM])/m.test(execSync('git status --porcelain'))) {
-        status.doneStep(false);
         throw new CustomError('You have uncommited changes in your working tree. Aborting.');
       }
       status.doneStep(true);
@@ -50,7 +48,6 @@ const runValidations = () => {
     // ENFORCE NO UNTRACKED FILES
     if (config.publish.noUntrackedFiles) {
       if (/^\?\?/m.test(execSync('git status --porcelain'))) {
-        status.doneStep(false);
         throw new CustomError('You have untracked files in your working tree. Aborting.');
       }
       status.doneStep(true);
@@ -65,13 +62,10 @@ const runValidations = () => {
       const BASE = execSync('git merge-base @ @{u}', { encoding: 'utf8' }).trim();
 
       if (LOCAL !== REMOTE && LOCAL === BASE) {
-        status.doneStep(false);
         throw new CustomError('Your local branch is out-of-date. Please pull the latest remote changes. Aborting.');
       } else if (LOCAL !== REMOTE && REMOTE === BASE) {
-        status.doneStep(false);
         throw new CustomError('Your local branch is ahead of its remote branch. Please push your local changes. Aborting.');
       } else if (LOCAL !== REMOTE) {
-        status.doneStep(false);
         throw new CustomError('Your local and remote branches have diverged. Please put them in sync. Aborting.');
       }
       status.doneStep(true);
@@ -181,6 +175,4 @@ export default async () => {
   await confirmation(releaseInfo);
 
   publish(releaseInfo);
-
-  status.stop();
 };

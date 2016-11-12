@@ -153,7 +153,6 @@ const saveChangelog = changelogMarkdown => {
     execSync('git push');
     status.doneStep(true);
   } catch (e) {
-    status.doneStep(false);
     throw new CustomError('CHANGELOG.md hasn\'t changed');
   }
 };
@@ -166,8 +165,6 @@ export default async () => {
   const changelogMarkdown = generateChangelog({ closedIssues, tagsWithCreatedAt });
 
   saveChangelog(changelogMarkdown);
-
-  status.stop();
 
   return changelogMarkdown;
 };
