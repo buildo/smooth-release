@@ -15,7 +15,7 @@ const Config = t.interface({
     token: t.maybe(t.String),
     changelog: t.interface({
       outputPath: t.String,
-      ignoredLabels: t.maybe(t.list(t.String)),
+      ignoredLabels: t.list(t.String),
       breaking: t.interface({
         title: t.String,
         labels: t.list(t.String)
@@ -29,12 +29,12 @@ const Config = t.interface({
       })
     })
   }),
-  publish: t.maybe(t.interface({
+  publish: t.interface({
     branch: t.maybe(t.String),
-    inSyncWithRemote: t.maybe(t.Boolean),
-    noUncommittedChanges: t.maybe(t.Boolean),
-    noUntrackedFiles: t.maybe(t.Boolean)
-  }))
+    inSyncWithRemote: t.Boolean,
+    noUncommittedChanges: t.Boolean,
+    noUntrackedFiles: t.Boolean
+  })
 });
 
 const defaultConfig = {
