@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 import semver from 'semver';
-import { find } from 'lodash';
+import { find, sortBy, range } from 'lodash';
 import {
   github,
   getCurrentBranch,
@@ -8,8 +8,10 @@ import {
   getPackageJsonVersion,
   info,
   title,
+  log,
   CustomError,
-  status
+  status,
+  rl
 } from '../utils';
 import config from '../config';
 
@@ -111,6 +113,24 @@ const computeRelease = async (packageJsonVersion) => {
   };
 };
 
+const confirmation = async releaseInfo => {
+  info('\nRelease Info\n');
+
+  const keys = Object.keys(releaseInfo);
+  const longestKey = sortBy(keys, key => key.length)[keys.length - 1];
+
+  keys.forEach((key, i) => {
+    const emptySpaces = range(longestKey.length - key.length + 1).map(() => ' ').join('');
+    const emptyLine = i === keys.length - 1 ? '\n' : '';
+
+    log(`  ${key}:${emptySpaces}${releaseInfo[key]}${emptyLine}`);
+  });
+
+  if (!(await rl.confirmation('If you continue you will publish this version to "npm". Are you sure?'))) {
+    throw new CustomError('You refused the computed release. Aborting');
+  }
+};
+
 const publish = (releaseInfo) => {
   info('\nIncrease version and publish package on npm');
   status.addSteps([
@@ -137,6 +157,8 @@ export default async () => {
   runValidations();
 
   const releaseInfo = await computeRelease(getPackageJsonVersion());
+
+  await confirmation(releaseInfo);
 
   publish(releaseInfo);
 
