@@ -2,6 +2,19 @@
 
 
 
+## [v4.0.0](https://github.com/FrancescoCioria/smooth-release/tree/v4.0.0) (2016-11-12)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v3.0.0...v4.0.0)
+
+#### Breaking:
+
+- default config should be enough to run smooth-release without errors [#38](https://github.com/FrancescoCioria/smooth-release/issues/38)
+- add validation for untracked files [#33](https://github.com/FrancescoCioria/smooth-release/issues/33)
+- add validation for uncommitted changes [#32](https://github.com/FrancescoCioria/smooth-release/issues/32)
+
+#### Fixes (bugs & defects):
+
+- elegant-status sometimes doesn't show ongoing step [#36](https://github.com/FrancescoCioria/smooth-release/issues/36)
+
 ## [v3.0.0](https://github.com/FrancescoCioria/smooth-release/tree/v3.0.0) (2016-11-12)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v2.0.2...v3.0.0)
 
