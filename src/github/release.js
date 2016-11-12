@@ -44,7 +44,7 @@ const getLastVersionTag = async packageJsonVersion => {
 };
 
 const computeRelease = async tag => {
-  info('\nCompute release');
+  info('Compute release\n');
   status.addSteps([
     'Get tag\'s creation datetime from GitHub',
     'Compute "release" object'
@@ -68,7 +68,7 @@ const computeRelease = async tag => {
 };
 
 const postRelease = async release => {
-  info('\nCreate new release on GitHub');
+  info('Create new release on GitHub\n');
   status.addSteps([
     'Post release on GitHub'
   ]);
