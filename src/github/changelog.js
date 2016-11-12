@@ -1,8 +1,16 @@
 import fs from 'fs';
-import { execSync } from 'child_process';
 import stagger from 'staggerjs';
 import { find, some, sortBy } from 'lodash';
-import { github, getGithubOwnerAndRepo, getRootFolderPath, title, info, status, CustomError } from '../utils';
+import {
+  github,
+  getGithubOwnerAndRepo,
+  getRootFolderPath,
+  title,
+  info,
+  status,
+  exec,
+  CustomError
+} from '../utils';
 import getAllTags from '../modules/getAllTags';
 import getAllClosedIssues from '../modules/getAllClosedIssues';
 import config from '../config';
@@ -135,7 +143,7 @@ const generateChangelog = ({ closedIssues, tagsWithCreatedAt }) => {
   return changelogMarkdown;
 };
 
-const saveChangelog = changelogMarkdown => {
+const saveChangelog = async changelogMarkdown => {
   info('\nSave CHANGELOG.md on GitHub');
   status.addSteps([
     'Save changelog locally',
@@ -148,12 +156,11 @@ const saveChangelog = changelogMarkdown => {
 
   // PUSH changes
   try {
-    execSync(`git add ${config.github.changelog.outputPath}`);
-    execSync('git commit -m "Update CHANGELOG.md"');
-    execSync('git push');
+    await exec(`git add ${config.github.changelog.outputPath}`);
+    await exec('git commit -m "Update CHANGELOG.md"');
+    await exec('git push');
     status.doneStep(true);
   } catch (e) {
-    status.doneStep(false);
     throw new CustomError('CHANGELOG.md hasn\'t changed');
   }
 };
@@ -165,9 +172,7 @@ export default async () => {
 
   const changelogMarkdown = generateChangelog({ closedIssues, tagsWithCreatedAt });
 
-  saveChangelog(changelogMarkdown);
-
-  status.stop();
+  await saveChangelog(changelogMarkdown);
 
   return changelogMarkdown;
 };

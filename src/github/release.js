@@ -78,7 +78,6 @@ const postRelease = async release => {
     status.doneStep(true);
   } catch (e) {
     const { message } = JSON.parse(e.message);
-    status.doneStep(false);
     throw new CustomError(message === 'Validation Failed' ? `Release "${release.tag_name}" already exists` : message);
   }
 };
@@ -103,6 +102,4 @@ export default async ({ all }) => {
       await postRelease(release);
     }
   }
-
-  status.stop();
 };

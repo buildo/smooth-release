@@ -1,9 +1,8 @@
-import { execSync } from 'child_process';
+import { exec as _exec, execSync } from 'child_process';
 import fs from 'fs';
 import elegantStatus from 'elegant-status';
 import Octokat from 'octokat';
 import console from 'better-console';
-// import readline from 'readline';
 import inquirer from 'inquirer';
 import { startsWith, every } from 'lodash';
 import config from './config';
@@ -14,22 +13,21 @@ const Status = () => {
   let steps = [];
   let done = null;
 
-  const runStep = () => {
+  const runNextStep = () => {
     if (steps.length > 0) {
       done = elegantStatus(steps.shift());
-    } else {
-      done = null;
     }
   };
 
   return {
     addSteps: newSteps => {
       steps = steps.concat(newSteps);
-      runStep();
+      !done && runNextStep(); // if idle run first step in the list
     },
     doneStep: res => {
       done(res);
-      runStep();
+      done = null;
+      runNextStep();
     },
     stop: () => {
       steps = [];
@@ -39,6 +37,21 @@ const Status = () => {
 };
 
 export const status = Status();
+
+
+// EXEC INTERFACE
+
+export const exec = (command, settings) => {
+  return new Promise((resolve, reject) => {
+    _exec(command, settings, (error, stdout) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(stdout);
+      }
+    });
+  });
+};
 
 
 // CUSTOM ERROR

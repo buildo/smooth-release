@@ -1,4 +1,3 @@
-import { execSync } from 'child_process';
 import semver from 'semver';
 import { find, sortBy, range, some } from 'lodash';
 import {
@@ -11,28 +10,24 @@ import {
   log,
   CustomError,
   status,
-  rl
+  rl,
+  exec
 } from '../utils';
 import config from '../config';
 
 const stdio = [process.stdin, null, process.stderr];
 
-const runValidations = () => {
+const runValidations = async () => {
   const shouldRunValidations = some(config.publish);
 
   if (shouldRunValidations) {
     info('Run validations');
-    status.addSteps([
-      config.publish.branch && 'Validate branch',
-      config.publish.noUncommittedChanges && 'Validate uncommitted changes',
-      config.publish.noUntrackedFiles && 'Validate untracked files',
-      config.publish.inSyncWithRemote && 'Validate sync with remote'
-    ].filter(x => x));
 
     // ENFORCE BRANCH
     if (config.publish.branch !== null) {
+      status.addSteps(['Validate branch']);
+
       if (getCurrentBranch() !== config.publish.branch) {
-        status.doneStep(false);
         throw new CustomError(`You must be on "${config.publish.branch}" branch to perform this task. Aborting.`);
       }
       status.doneStep(true);
@@ -40,8 +35,9 @@ const runValidations = () => {
 
     // ENFORCE NO UNCOMMITTED CHANGES
     if (config.publish.noUncommittedChanges) {
-      if (/^([ADRM]| [ADRM])/m.test(execSync('git status --porcelain'))) {
-        status.doneStep(false);
+      status.addSteps(['Validate uncommitted changes']);
+
+      if (/^([ADRM]| [ADRM])/m.test(await exec('git status --porcelain'))) {
         throw new CustomError('You have uncommited changes in your working tree. Aborting.');
       }
       status.doneStep(true);
@@ -49,8 +45,9 @@ const runValidations = () => {
 
     // ENFORCE NO UNTRACKED FILES
     if (config.publish.noUntrackedFiles) {
-      if (/^\?\?/m.test(execSync('git status --porcelain'))) {
-        status.doneStep(false);
+      status.addSteps(['Validate untracked files']);
+
+      if (/^\?\?/m.test(await exec('git status --porcelain'))) {
         throw new CustomError('You have untracked files in your working tree. Aborting.');
       }
       status.doneStep(true);
@@ -58,20 +55,19 @@ const runValidations = () => {
 
     // ENFORCE SYNC WITH REMOTE
     if (config.publish.inSyncWithRemote) {
-      execSync('git fetch');
+      status.addSteps(['Validate sync with remote']);
 
-      const LOCAL = execSync('git rev-parse @', { encoding: 'utf8' }).trim();
-      const REMOTE = execSync('git rev-parse @{u}', { encoding: 'utf8' }).trim();
-      const BASE = execSync('git merge-base @ @{u}', { encoding: 'utf8' }).trim();
+      await exec('git fetch');
+
+      const LOCAL = (await exec('git rev-parse @', { encoding: 'utf8' })).trim();
+      const REMOTE = (await exec('git rev-parse @{u}', { encoding: 'utf8' })).trim();
+      const BASE = (await exec('git merge-base @ @{u}', { encoding: 'utf8' })).trim();
 
       if (LOCAL !== REMOTE && LOCAL === BASE) {
-        status.doneStep(false);
         throw new CustomError('Your local branch is out-of-date. Please pull the latest remote changes. Aborting.');
       } else if (LOCAL !== REMOTE && REMOTE === BASE) {
-        status.doneStep(false);
         throw new CustomError('Your local branch is ahead of its remote branch. Please push your local changes. Aborting.');
       } else if (LOCAL !== REMOTE) {
-        status.doneStep(false);
         throw new CustomError('Your local and remote branches have diverged. Please put them in sync. Aborting.');
       }
       status.doneStep(true);
@@ -151,7 +147,7 @@ const confirmation = async releaseInfo => {
   }
 };
 
-const publish = (releaseInfo) => {
+const publish = async (releaseInfo) => {
   info('\nIncrease version and publish package on npm');
   status.addSteps([
     'Run "npm preversion" and "npm version"',
@@ -160,27 +156,25 @@ const publish = (releaseInfo) => {
   ]);
 
   // START PUBLISH PROCESS
-  execSync(`npm version v${releaseInfo.version}`, { stdio });
+  await exec(`npm version v${releaseInfo.version}`, { stdio });
   status.doneStep(true);
 
-  execSync('npm publish', { stdio });
+  await exec('npm publish', { stdio });
   status.doneStep(true);
 
-  execSync('git push', { stdio });
-  execSync('git push --tags', { stdio });
+  await exec('git push', { stdio });
+  await exec('git push --tags', { stdio });
   status.doneStep(true);
 };
 
 export default async () => {
   title('Increase version and publish package on npm');
 
-  runValidations();
+  await runValidations();
 
   const releaseInfo = await computeRelease(getPackageJsonVersion());
 
   await confirmation(releaseInfo);
 
-  publish(releaseInfo);
-
-  status.stop();
+  await publish(releaseInfo);
 };
