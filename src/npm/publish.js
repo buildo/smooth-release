@@ -22,15 +22,11 @@ const runValidations = () => {
 
   if (shouldRunValidations) {
     info('Run validations');
-    status.addSteps([
-      config.publish.branch && 'Validate branch',
-      config.publish.noUncommittedChanges && 'Validate uncommitted changes',
-      config.publish.noUntrackedFiles && 'Validate untracked files',
-      config.publish.inSyncWithRemote && 'Validate sync with remote'
-    ].filter(x => x));
 
     // ENFORCE BRANCH
     if (config.publish.branch !== null) {
+      status.addSteps(['Validate branch']);
+
       if (getCurrentBranch() !== config.publish.branch) {
         throw new CustomError(`You must be on "${config.publish.branch}" branch to perform this task. Aborting.`);
       }
@@ -39,6 +35,8 @@ const runValidations = () => {
 
     // ENFORCE NO UNCOMMITTED CHANGES
     if (config.publish.noUncommittedChanges) {
+      status.addSteps(['Validate uncommitted changes']);
+
       if (/^([ADRM]| [ADRM])/m.test(execSync('git status --porcelain'))) {
         throw new CustomError('You have uncommited changes in your working tree. Aborting.');
       }
@@ -47,6 +45,8 @@ const runValidations = () => {
 
     // ENFORCE NO UNTRACKED FILES
     if (config.publish.noUntrackedFiles) {
+      status.addSteps(['Validate untracked files']);
+
       if (/^\?\?/m.test(execSync('git status --porcelain'))) {
         throw new CustomError('You have untracked files in your working tree. Aborting.');
       }
@@ -55,6 +55,8 @@ const runValidations = () => {
 
     // ENFORCE SYNC WITH REMOTE
     if (config.publish.inSyncWithRemote) {
+      status.addSteps(['Validate sync with remote']);
+
       execSync('git fetch');
 
       const LOCAL = execSync('git rev-parse @', { encoding: 'utf8' }).trim();
