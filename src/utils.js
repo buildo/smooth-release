@@ -1,12 +1,45 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
-import status from 'node-status';
+import elegantStatus from 'elegant-status';
 import Octokat from 'octokat';
 import console from 'better-console';
 // import readline from 'readline';
 import inquirer from 'inquirer';
 import { startsWith, every } from 'lodash';
 import config from './config';
+
+// STATUS
+
+const Status = () => {
+  let steps = [];
+  let done = null;
+
+  const runStep = () => {
+    if (steps.length > 0) {
+      done = elegantStatus(steps.shift());
+    } else {
+      done = null;
+    }
+  };
+
+  return {
+    addSteps: newSteps => {
+      steps = steps.concat(newSteps);
+      runStep();
+    },
+    doneStep: res => {
+      done(res);
+      runStep();
+    },
+    stop: () => {
+      steps = [];
+      done && done(false);
+    }
+  };
+};
+
+export const status = Status();
+
 
 // CUSTOM ERROR
 

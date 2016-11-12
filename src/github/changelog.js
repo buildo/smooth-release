@@ -1,9 +1,8 @@
 import fs from 'fs';
 import { execSync } from 'child_process';
 import stagger from 'staggerjs';
-import status from 'node-status';
 import { find, some, sortBy } from 'lodash';
-import { github, getGithubOwnerAndRepo, getRootFolderPath, title, info, CustomError } from '../utils';
+import { github, getGithubOwnerAndRepo, getRootFolderPath, title, info, status, CustomError } from '../utils';
 import getAllTags from '../modules/getAllTags';
 import getAllClosedIssues from '../modules/getAllClosedIssues';
 import config from '../config';
@@ -89,41 +88,37 @@ const createChangelogSection = ({ previousTag, tag, issues = [] }) => {
 
 const getDataFromGitHub = async () => {
   info('Get data from GitHub');
-  const statusSteps = status.addItem('dataGitHub', {
-    steps: [
-      'Get all closed issues from GitHub',
-      'Get all tags from GitHub',
-      'Add "createdAt" date-time info to each tag'
-    ]
-  });
+  status.addSteps([
+    'Get all closed issues from GitHub',
+    'Get all tags from GitHub',
+    'Add "createdAt" date-time info to each tag'
+  ]);
 
   // GET closed issues
   const closedIssues = (await getAllClosedIssues()).filter(i => !hasAtLeastOneLabel(i, config.github.changelog.ignoredLabels));
-  statusSteps.doneStep(true);
+  status.doneStep(true);
 
   // GET tags
   const tags = await getAllTags();
-  statusSteps.doneStep(true);
+  status.doneStep(true);
 
   // ADD "created-at" info to each tag
   const tagsWithCreatedAt = tags.length ? await addCreatedAtInfoToTags(tags) : tags;
-  statusSteps.doneStep(true);
+  status.doneStep(true);
 
   return { closedIssues, tagsWithCreatedAt };
 };
 
 const generateChangelog = ({ closedIssues, tagsWithCreatedAt }) => {
   info('\nGenerate CHANGELOG.md');
-  const statusSteps = status.addItem('generateChangelog', {
-    steps: [
-      'Group closed issues by relative tag',
-      'Generate changelog for each tag'
-    ]
-  });
+  status.addSteps([
+    'Group closed issues by relative tag',
+    'Generate changelog for each tag'
+  ]);
 
   // GROUP issues by tag
   const issuesGroupedByTag = groupIssuesByTag(closedIssues, tagsWithCreatedAt);
-  statusSteps.doneStep(true);
+  status.doneStep(true);
 
   // WRITE changelog for each tag
   const changelogSections = tagsWithCreatedAt.map((tag, i) => (
@@ -135,39 +130,36 @@ const generateChangelog = ({ closedIssues, tagsWithCreatedAt }) => {
 
   // WRITE complete changelog
   const changelogMarkdown = `#  Change Log\n\n${[unreleased].concat(changelogSections).join('\n\n')}`;
-  statusSteps.doneStep(true);
+  status.doneStep(true);
 
   return changelogMarkdown;
 };
 
 const saveChangelog = changelogMarkdown => {
   info('\nSave CHANGELOG.md on GitHub');
-  const statusSteps = status.addItem('saveChangelog', {
-    steps: [
-      'Save changelog locally',
-      'Update changelog on GitHub'
-    ]
-  });
+  status.addSteps([
+    'Save changelog locally',
+    'Update changelog on GitHub'
+  ]);
 
   // SAVE changelog
   fs.writeFileSync(`${getRootFolderPath()}/${config.github.changelog.outputPath}`, changelogMarkdown);
-  statusSteps.doneStep(true);
+  status.doneStep(true);
 
   // PUSH changes
   try {
     execSync(`git add ${config.github.changelog.outputPath}`);
     execSync('git commit -m "Update CHANGELOG.md"');
     execSync('git push');
-    statusSteps.doneStep(true);
+    status.doneStep(true);
   } catch (e) {
-    statusSteps.doneStep(false);
+    status.doneStep(false);
     throw new CustomError('CHANGELOG.md hasn\'t changed');
   }
 };
 
 export default async () => {
   title('Update changelog');
-  status.start({ pattern: '{spinner.cyan}' });
 
   const { closedIssues, tagsWithCreatedAt } = await getDataFromGitHub();
 
