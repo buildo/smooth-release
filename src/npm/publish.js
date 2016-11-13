@@ -76,7 +76,7 @@ const runValidations = async () => {
 };
 
 const computeRelease = async (packageJsonVersion) => {
-  info('Compute release\n');
+  info('Compute release');
   status.addSteps([
     'Get all tags from GitHub',
     'Check if version should be "breaking"',
@@ -130,7 +130,7 @@ const computeRelease = async (packageJsonVersion) => {
 };
 
 const confirmation = async releaseInfo => {
-  info('Release Info\n');
+  info('Release Info');
 
   const keys = Object.keys(releaseInfo);
   const longestKey = sortBy(keys, key => key.length)[keys.length - 1];
@@ -148,7 +148,7 @@ const confirmation = async releaseInfo => {
 };
 
 const publish = async (releaseInfo) => {
-  info('Increase version and publish package on npm\n');
+  info('Increase version and publish package on npm');
   status.addSteps([
     'Run "npm preversion" and "npm version"',
     'Run "npm prepublish" and "npm publish"',

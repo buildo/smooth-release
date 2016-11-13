@@ -95,7 +95,7 @@ const createChangelogSection = ({ previousTag, tag, issues = [] }) => {
 };
 
 const getDataFromGitHub = async () => {
-  info('Get data from GitHub\n');
+  info('Get data from GitHub');
   status.addSteps([
     'Get all closed issues from GitHub',
     'Get all tags from GitHub',
@@ -118,7 +118,7 @@ const getDataFromGitHub = async () => {
 };
 
 const generateChangelog = ({ closedIssues, tagsWithCreatedAt }) => {
-  info('Generate CHANGELOG.md\n');
+  info('Generate CHANGELOG.md');
   status.addSteps([
     'Group closed issues by relative tag',
     'Generate changelog for each tag'
@@ -144,7 +144,7 @@ const generateChangelog = ({ closedIssues, tagsWithCreatedAt }) => {
 };
 
 const saveChangelog = async changelogMarkdown => {
-  info('Save CHANGELOG.md on GitHub\n');
+  info('Save CHANGELOG.md on GitHub');
   status.addSteps([
     'Save changelog locally',
     'Update changelog on GitHub'
