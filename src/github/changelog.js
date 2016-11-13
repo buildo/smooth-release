@@ -95,7 +95,7 @@ const createChangelogSection = ({ previousTag, tag, issues = [] }) => {
 };
 
 const getDataFromGitHub = async () => {
-  info('Get data from GitHub');
+  info('Get data from GitHub\n');
   status.addSteps([
     'Get all closed issues from GitHub',
     'Get all tags from GitHub',

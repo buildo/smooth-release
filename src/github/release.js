@@ -12,7 +12,7 @@ import {
 import getAllTags from '../modules/getAllTags';
 
 const getAllVersionTags = async () => {
-  info('Get all npm version "tags"');
+  info('Get all npm version "tags"\n');
   status.addSteps([
     'Get all tags from GitHub',
     'filter npm-version tags'
@@ -28,7 +28,7 @@ const getAllVersionTags = async () => {
 };
 
 const getLastVersionTag = async packageJsonVersion => {
-  info('Get last npm version "tag"');
+  info('Get last npm version "tag"\n');
   status.addSteps([
     'Get all tags from GitHub',
     'Find last npm-version tag'
