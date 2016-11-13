@@ -78,6 +78,7 @@ const postRelease = async release => {
     await github.releases.create(release);
     status.doneStep(true);
   } catch (e) {
+    status.doneStep(false);
     const { message } = JSON.parse(e.message);
     throw new CustomError(message === 'Validation Failed' ? `Release "${release.tag_name}" already exists` : message);
   }
