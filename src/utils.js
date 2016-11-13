@@ -7,10 +7,20 @@ import inquirer from 'inquirer';
 import { startsWith, every } from 'lodash';
 import config from './config';
 
-// STATUS
+// LOGS
+export const log = console.log;
+export const info = console.info;
+export const warning = console.warn;
+export const error = console.error;
+export const title = title => (
+  warning(`\n${title.toUpperCase()}\n${title.split('').map(() => '-').join('')}\n`)
+);
+const emptyLine = () => log('');
 
+
+// STATUS
 const Status = () => {
-  let steps = [];
+  let steps = null;
   let done = null;
 
   const runNextStep = () => {
@@ -21,7 +31,9 @@ const Status = () => {
 
   return {
     addSteps: newSteps => {
-      steps = steps.concat(newSteps);
+      !done && steps && emptyLine();
+
+      steps = (steps || []).concat(newSteps);
       !done && runNextStep(); // if idle run first step in the list
     },
     doneStep: res => {
@@ -40,7 +52,6 @@ export const status = Status();
 
 
 // EXEC INTERFACE
-
 export const exec = (command, settings) => {
   return new Promise((resolve, reject) => {
     _exec(command, settings, (error, stdout) => {
@@ -55,7 +66,6 @@ export const exec = (command, settings) => {
 
 
 // CUSTOM ERROR
-
 export function CustomError(message) {
   this.name = 'CustomError';
   this.message = message || '';
@@ -65,16 +75,6 @@ export function CustomError(message) {
 }
 CustomError.prototype = Object.create(Error.prototype);
 
-
-// LOGS
-
-export const log = console.log;
-export const info = console.info;
-export const warning = console.warn;
-export const error = console.error;
-export const title = title => (
-  warning(`\n${title.toUpperCase()}\n${title.split('').map(() => '-').join('')}\n`)
-);
 
 export const onError = e => {
   status.stop();
@@ -88,7 +88,6 @@ export const onError = e => {
 
 
 // UTILS
-
 export const getCurrentBranch = () => execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
 
 export const isVersionTag = tag => (
@@ -101,8 +100,8 @@ export const getPackageJsonVersion = () => (
   JSON.parse(fs.readFileSync(`${getRootFolderPath()}/package.json`)).version
 );
 
-// OCTOKAT
 
+// OCTOKAT
 export const getGithubOwnerAndRepo = () => {
   const remoteOriginUrl = execSync('git config --get remote.origin.url', { encoding: 'utf8' }).trim();
 
@@ -118,7 +117,6 @@ export const github = octokat.repos(`${owner}/${repo}`);
 
 
 // RL INTERFACE
-
 function rlinterface() {
   return {
     question: (message, defaultInput) => new Promise((resolve) => {
