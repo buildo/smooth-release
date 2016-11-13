@@ -1,4 +1,4 @@
-import { find, startsWith } from 'lodash';
+import { find } from 'lodash';
 import stagger from 'staggerjs';
 import {
   github,
@@ -7,7 +7,8 @@ import {
   title,
   info,
   status,
-  CustomError
+  CustomError,
+  isVersionTag
 } from '../utils';
 import getAllTags from '../modules/getAllTags';
 
@@ -21,7 +22,7 @@ const getAllVersionTags = async () => {
   const tags = await getAllTags();
   status.doneStep(true);
 
-  const versionTags = tags.filter(t => startsWith(t.name, 'v'));
+  const versionTags = tags.filter(isVersionTag);
   status.doneStep(versionTags.length > 0);
 
   return versionTags;
