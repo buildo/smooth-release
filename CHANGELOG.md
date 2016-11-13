@@ -2,6 +2,13 @@
 
 
 
+## [v4.0.2](https://github.com/FrancescoCioria/smooth-release/tree/v4.0.2) (2016-11-13)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v4.0.1...v4.0.2)
+
+#### Fixes (bugs & defects):
+
+- fix status logs once and for all [#42](https://github.com/FrancescoCioria/smooth-release/issues/42)
+
 ## [v4.0.1](https://github.com/FrancescoCioria/smooth-release/tree/v4.0.1) (2016-11-12)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v4.0.0...v4.0.1)
 
