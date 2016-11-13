@@ -8,6 +8,7 @@ import {
   info,
   title,
   log,
+  emptyLine,
   CustomError,
   status,
   rl,
@@ -145,6 +146,8 @@ const confirmation = async releaseInfo => {
   if (!(await rl.confirmation('If you continue you will publish this version to "npm". Are you sure?'))) {
     throw new CustomError('You refused the computed release. Aborting');
   }
+
+  emptyLine();
 };
 
 const publish = async (releaseInfo) => {

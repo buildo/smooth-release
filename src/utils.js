@@ -15,7 +15,7 @@ export const error = console.error;
 export const title = title => (
   warning(`\n${title.toUpperCase()}\n${title.split('').map(() => '-').join('')}\n`)
 );
-const emptyLine = () => log('');
+export const emptyLine = () => log('');
 
 
 // STATUS
