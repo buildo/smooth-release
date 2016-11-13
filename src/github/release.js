@@ -13,7 +13,7 @@ import {
 import getAllTags from '../modules/getAllTags';
 
 const getAllVersionTags = async () => {
-  info('Get all npm version "tags"\n');
+  info('Get all npm version "tags"');
   status.addSteps([
     'Get all tags from GitHub',
     'filter npm-version tags'
@@ -29,7 +29,7 @@ const getAllVersionTags = async () => {
 };
 
 const getLastVersionTag = async packageJsonVersion => {
-  info('Get last npm version "tag"\n');
+  info('Get last npm version "tag"');
   status.addSteps([
     'Get all tags from GitHub',
     'Find last npm-version tag'
@@ -45,7 +45,7 @@ const getLastVersionTag = async packageJsonVersion => {
 };
 
 const computeRelease = async tag => {
-  info('Compute release\n');
+  info('Compute release');
   status.addSteps([
     'Get tag\'s creation datetime from GitHub',
     'Compute "release" object'
@@ -69,7 +69,7 @@ const computeRelease = async tag => {
 };
 
 const postRelease = async release => {
-  info('Create new release on GitHub\n');
+  info('Create new release on GitHub');
   status.addSteps([
     'Post release on GitHub'
   ]);
@@ -78,6 +78,7 @@ const postRelease = async release => {
     await github.releases.create(release);
     status.doneStep(true);
   } catch (e) {
+    status.doneStep(false);
     const { message } = JSON.parse(e.message);
     throw new CustomError(message === 'Validation Failed' ? `Release "${release.tag_name}" already exists` : message);
   }
