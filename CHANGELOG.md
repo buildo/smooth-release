@@ -2,6 +2,13 @@
 
 
 
+## [v5.0.0](https://github.com/FrancescoCioria/smooth-release/tree/v5.0.0) (2016-11-25)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v4.0.2...v5.0.0)
+
+#### Breaking:
+
+- split publish.js in multiple sub-modules [#44](https://github.com/FrancescoCioria/smooth-release/issues/44)
+
 ## [v4.0.2](https://github.com/FrancescoCioria/smooth-release/tree/v4.0.2) (2016-11-13)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v4.0.1...v4.0.2)
 
