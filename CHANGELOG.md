@@ -2,6 +2,13 @@
 
 
 
+## [v5.0.1](https://github.com/FrancescoCioria/smooth-release/tree/v5.0.1) (2016-11-25)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v5.0.0...v5.0.1)
+
+#### New features:
+
+- pass version manually [#46](https://github.com/FrancescoCioria/smooth-release/issues/46)
+
 ## [v5.0.0](https://github.com/FrancescoCioria/smooth-release/tree/v5.0.0) (2016-11-25)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v4.0.2...v5.0.0)
 
