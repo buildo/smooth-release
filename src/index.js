@@ -24,6 +24,7 @@ const defaultArgv = {
 const runDefault = every(Object.keys(defaultArgv), arg => typeof _argv[arg] === 'undefined');
 
 const argv = runDefault ? defaultArgv : _argv;
+const mainArgument = _argv._[0];
 
 const main = async () => {
   try {
@@ -31,7 +32,7 @@ const main = async () => {
 
     !argv['no-validations'] && await validations();
 
-    argv['npm-version'] && await version();
+    argv['npm-version'] && await version(mainArgument);
 
     argv.changelog && await changelog();
 

@@ -16,58 +16,83 @@ import {
 
 const stdio = [process.stdin, null, process.stderr];
 
-const computeRelease = async (packageJsonVersion) => {
+const computeRelease = async ({ manualVersion, packageJsonVersion }) => {
   info('Compute release');
-  status.addSteps([
-    'Get all tags from GitHub',
-    'Check if version should be "breaking"',
-    'Compute version'
-  ]);
 
-  // AVOID DUPLICATE PUBLISHED VERSIONS
-  const tags = await github.tags.fetch();
-  status.doneStep(true);
+  if (!manualVersion) {
+    status.addSteps([
+      'Get all tags from GitHub',
+      'Check if version should be "breaking"',
+      'Compute version'
+    ]);
 
-  let breakingIssuesUpdatedAfterLastTag = undefined;
-  let lastVersionTagDateTime = undefined;
-  const lastVersionTag = find(tags, isVersionTag);
+    // AVOID DUPLICATE PUBLISHED VERSIONS
+    const tags = await github.tags.fetch();
+    status.doneStep(true);
 
-  if (lastVersionTag) {
-    const lastVersionTagSha = lastVersionTag.commit.sha;
+    let breakingIssuesUpdatedAfterLastTag = undefined;
+    let lastVersionTagDateTime = undefined;
+    const lastVersionTag = find(tags, isVersionTag);
 
-    const tagCommit = await github.commits(lastVersionTagSha).fetch();
-    lastVersionTagDateTime = tagCommit.commit.author.date;
+    if (lastVersionTag) {
+      const lastVersionTagSha = lastVersionTag.commit.sha;
 
-    const issuesUpdatedAfterLastTag = await github.issues.fetch({ state: 'closed', since: lastVersionTagDateTime });
-    const unpublishedIssues = issuesUpdatedAfterLastTag.filter(i => i.closedAt >= new Date(lastVersionTagDateTime));
+      const tagCommit = await github.commits(lastVersionTagSha).fetch();
+      lastVersionTagDateTime = tagCommit.commit.author.date;
 
-    if (unpublishedIssues.length === 0) {
-      throw new CustomError('Can\'t find any issue closed after last publish. Are you sure there are new features to publish?');
+      const issuesUpdatedAfterLastTag = await github.issues.fetch({ state: 'closed', since: lastVersionTagDateTime });
+      const unpublishedIssues = issuesUpdatedAfterLastTag.filter(i => i.closedAt >= new Date(lastVersionTagDateTime));
+
+      if (unpublishedIssues.length === 0) {
+        throw new CustomError('Can\'t find any issue closed after last publish. Are you sure there are new features to publish?');
+      }
+      breakingIssuesUpdatedAfterLastTag = await github.issues.fetch({ labels: 'breaking', state: 'closed', since: lastVersionTagDateTime });
+    } else {
+      breakingIssuesUpdatedAfterLastTag = await github.issues.fetch({ labels: 'breaking', state: 'closed' });
     }
-    breakingIssuesUpdatedAfterLastTag = await github.issues.fetch({ labels: 'breaking', state: 'closed', since: lastVersionTagDateTime });
+
+    // VERIFY IF RELEASE SHOULD BE BREAKING
+    const unpublishedBreakingIssues = breakingIssuesUpdatedAfterLastTag.filter(i => !lastVersionTagDateTime || i.closedAt >= new Date(lastVersionTagDateTime));
+    const isBreaking = unpublishedBreakingIssues.length > 0;
+    status.doneStep(true);
+
+    // COMPUTE RELEASE INFO
+    const isBeta = semver.satisfies(packageJsonVersion, '< 1');
+    const level = isBeta ?
+      (isBreaking ? 'minor' : 'patch') :
+      (isBreaking ? 'major' : 'patch');
+    const version = semver.inc(packageJsonVersion, level);
+    status.doneStep(true);
+
+    return {
+      isBeta,
+      isBreaking,
+      level,
+      version
+    };
   } else {
-    breakingIssuesUpdatedAfterLastTag = await github.issues.fetch({ labels: 'breaking', state: 'closed' });
+    status.addSteps([
+      'Compute version'
+    ]);
+
+    const version = semver.valid(manualVersion) || semver.inc(packageJsonVersion, manualVersion);
+
+    if (semver.lte(version, packageJsonVersion)) {
+      throw new CustomError(`You can't pass a version lower than or equal to "${packageJsonVersion}" (current version)`);
+    }
+
+    const isBeta = semver.satisfies(packageJsonVersion, '< 1');
+    const level = semver.diff(packageJsonVersion, version);
+    const isBreaking = level === 'major';
+    status.doneStep(true);
+
+    return {
+      isBeta,
+      isBreaking,
+      level,
+      version
+    };
   }
-
-  // VERIFY IF RELEASE SHOULD BE BREAKING
-  const unpublishedBreakingIssues = breakingIssuesUpdatedAfterLastTag.filter(i => !lastVersionTagDateTime || i.closedAt >= new Date(lastVersionTagDateTime));
-  const isBreaking = unpublishedBreakingIssues.length > 0;
-  status.doneStep(true);
-
-  // COMPUTE RELEASE INFO
-  const isBeta = semver.satisfies(packageJsonVersion, '< 1');
-  const level = isBeta ?
-    (isBreaking ? 'minor' : 'patch') :
-    (isBreaking ? 'major' : 'patch');
-  const version = semver.inc(packageJsonVersion, level);
-  status.doneStep(true);
-
-  return {
-    isBeta,
-    isBreaking,
-    level,
-    version
-  };
 };
 
 const confirmation = async releaseInfo => {
@@ -105,10 +130,13 @@ const version = async (releaseInfo) => {
   status.doneStep(true);
 };
 
-export default async () => {
+export default async (manualVersion) => {
   title('Increase version in "package.json"');
 
-  const releaseInfo = await computeRelease(getPackageJsonVersion());
+  const releaseInfo = await computeRelease({
+    manualVersion,
+    packageJsonVersion: getPackageJsonVersion()
+  });
 
   await confirmation(releaseInfo);
 
