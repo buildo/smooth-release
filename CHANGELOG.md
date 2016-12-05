@@ -2,6 +2,13 @@
 
 
 
+## [v5.0.2](https://github.com/FrancescoCioria/smooth-release/tree/v5.0.2) (2016-12-05)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v5.0.1...v5.0.2)
+
+#### New features:
+
+- allow passing token as CLI argument [#48](https://github.com/FrancescoCioria/smooth-release/issues/48)
+
 ## [v5.0.1](https://github.com/FrancescoCioria/smooth-release/tree/v5.0.1) (2016-11-25)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v5.0.0...v5.0.1)
 
