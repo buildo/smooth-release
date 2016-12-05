@@ -1,8 +1,11 @@
 import fs from 'fs';
 import { execSync } from 'child_process';
+import minimist from 'minimist';
 import t from 'tcomb';
 import { mergeWith } from 'lodash';
 import getToken from './github/token';
+
+const { token } = minimist(process.argv.slice(2));
 
 t.interface.strict = true;
 
@@ -67,7 +70,7 @@ const defaultConfig = {
 };
 
 const config = mergeWith(
-  defaultConfig, smoothReleaseRC, { github: { token: getToken() } },
+  defaultConfig, smoothReleaseRC, { github: { token: token || getToken() } },
   (a, b) => t.Array.is(a) ? b : undefined
 );
 
