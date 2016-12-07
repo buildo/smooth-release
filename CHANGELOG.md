@@ -2,6 +2,13 @@
 
 
 
+## [v5.0.3](https://github.com/FrancescoCioria/smooth-release/tree/v5.0.3) (2016-12-07)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v5.0.2...v5.0.3)
+
+#### Fixes (bugs & defects):
+
+- `--no-validation` and `--no-npm-publish` CLI args don't work [#50](https://github.com/FrancescoCioria/smooth-release/issues/50)
+
 ## [v5.0.2](https://github.com/FrancescoCioria/smooth-release/tree/v5.0.2) (2016-12-05)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v5.0.1...v5.0.2)
 
