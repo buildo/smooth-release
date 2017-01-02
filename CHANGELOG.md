@@ -2,6 +2,13 @@
 
 
 
+## [v5.0.4](https://github.com/FrancescoCioria/smooth-release/tree/v5.0.4) (2017-01-02)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v5.0.3...v5.0.4)
+
+#### Fixes (bugs & defects):
+
+- Changelog: some Issues are put under the wrong tag [#54](https://github.com/FrancescoCioria/smooth-release/issues/54)
+
 ## [v5.0.3](https://github.com/FrancescoCioria/smooth-release/tree/v5.0.3) (2016-12-07)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v5.0.2...v5.0.3)
 
