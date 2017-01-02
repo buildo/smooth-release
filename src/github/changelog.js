@@ -32,7 +32,7 @@ const hasAtLeastOneLabel = (issue, labels) => some(labels, label => find(issue.l
 const groupIssuesByTag = (closedIssues, tags) => {
   const tagsSortedAsc = sortBy(tags, ['createdAt']);
   return closedIssues.reduce((issuesByTag, issue) => {
-    const tag = find(tagsSortedAsc, tag => tag.createdAt > issue.createdAt);
+    const tag = find(tagsSortedAsc, tag => tag.createdAt > issue.closedAt);
 
     if (tag) {
       return {
