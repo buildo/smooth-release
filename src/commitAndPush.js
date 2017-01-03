@@ -25,23 +25,23 @@ export default async ({ hasIncreasedVersion, hasUpdatedChangelog }) => {
 
   const changelogPath = `${getRootFolderPath()}/${config.github.changelog.outputPath}`;
   const packageJsonPath = `${getRootFolderPath()}/package.json`;
-  await exec(`echo git add ${changelogPath} ${packageJsonPath}`, { stdio });
+  await exec(`git add ${changelogPath} ${packageJsonPath}`, { stdio });
 
   const packageJsonVersion = getPackageJsonVersion();
   const commitMessage = hasIncreasedVersion ? packageJsonVersion : 'Update CHANGELOG.md';
-  await exec(`echo git commit -m "${commitMessage}"`, { stdio });
+  await exec(`git commit -m "${commitMessage}"`, { stdio });
   status.doneStep(true);
 
   if (hasIncreasedVersion) {
-    await exec(`echo git tag v${packageJsonVersion}`, { stdio });
+    await exec(`git tag v${packageJsonVersion}`, { stdio });
     status.doneStep(true);
   }
 
-  await exec('echo git push', { stdio });
+  await exec('git push', { stdio });
   status.doneStep(true);
 
   if (hasIncreasedVersion) {
-    await exec('echo git push --tags', { stdio });
+    await exec('git push --tags', { stdio });
     status.doneStep(true);
   }
 
