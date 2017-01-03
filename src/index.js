@@ -37,17 +37,29 @@ const main = async () => {
   try {
     !config.github.token && await askForToken();
 
-    argv.validations && await validations();
+    if (promptUserBeforeRunningTask('validations', 'Do you want to run the "validations"?')) {
+      await validations();
+    }
 
-    argv['npm-version'] && await version(mainArgument);
+    if (promptUserBeforeRunningTask('npm-version', 'Do you want run "npm-version" task and increase the version of you library?')) {
+      await version(mainArgument);
+    }
 
-    argv.changelog && await changelog();
+    if (promptUserBeforeRunningTask('changelog', 'Do you want run "changelog" task and update the CHANGELOG.md file?')) {
+      await changelog();
+    }
 
-    argv['gh-release'] && await release({ all: false });
+    if (promptUserBeforeRunningTask('gh-release', 'Do you want run "gh-release" task and create a release on GitHub for the last version of you library?')) {
+      await release({ all: false });
+    }
 
-    ((runDefault && argv['npm-publish']) || _argv['npm-publish']) && await publish();
+    if (promptUserBeforeRunningTask('npm-publish', 'Do you want run "npm-publish" task and publish your library on npm?')) {
+      await publish();
+    }
 
-    argv['gh-release-all'] && await release({ all: true });
+    if (promptUserBeforeRunningTask('gh-release-all', 'Do you want run "gh-release-all" task and create a release on GitHub for every version of your library?')) {
+      await release({ all: true });
+    }
   } catch (e) {
     onError(e);
   }
