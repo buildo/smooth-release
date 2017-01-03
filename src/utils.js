@@ -93,9 +93,16 @@ const getPackageJson = () => (
   JSON.parse(fs.readFileSync(`${getRootFolderPath()}/package.json`))
 );
 
+export const getPackageJsonName = () => getPackageJson().name;
+
 export const getPackageJsonVersion = () => getPackageJson().version;
 
-export const getPackageJsonName = () => getPackageJson().name;
+export const updatePackageJsonVersion = (version) => {
+  const packageJson = getPackageJson();
+  packageJson.version = version;
+
+  fs.writeFileSync(`${getRootFolderPath()}/package.json`, JSON.stringify(packageJson, null, 2));
+};
 
 
 // OCTOKAT
