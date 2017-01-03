@@ -2,6 +2,13 @@
 
 
 
+## [v6.0.0](https://github.com/FrancescoCioria/smooth-release/tree/v6.0.0) (2017-01-03)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v5.0.4...v6.0.0)
+
+#### Breaking:
+
+- Add interactive questions for each step [#52](https://github.com/FrancescoCioria/smooth-release/issues/52)
+
 ## [v5.0.4](https://github.com/FrancescoCioria/smooth-release/tree/v5.0.4) (2017-01-02)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v5.0.3...v5.0.4)
 
