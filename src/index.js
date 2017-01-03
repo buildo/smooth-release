@@ -7,7 +7,7 @@ import publish from './npm/publish';
 import release from './github/release';
 import changelog from './github/changelog';
 import { askForToken } from './github/token';
-import { onError, rl } from './utils';
+import { onError, rl, log } from './utils';
 import config from './config';
 
 const _argv = minimist(process.argv.slice(2));
@@ -30,6 +30,7 @@ const mainArgument = _argv._[0];
 
 const promptUserBeforeRunningTask = async (task, message) => {
   if (argv[task] === null) {
+    log('\n');
     return await rl.confirmation(message);
   }
 
