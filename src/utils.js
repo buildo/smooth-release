@@ -34,7 +34,7 @@ const Status = () => {
     addSteps: newSteps => {
       !done && steps && emptyLine();
 
-      steps = (steps || []).concat(newSteps);
+      steps = (steps || []).concat(newSteps.filter(x => x));
       !done && runNextStep(); // if idle run first step in the list
     },
     doneStep: res => {
