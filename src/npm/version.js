@@ -4,6 +4,7 @@ import {
   github,
   isVersionTag,
   getPackageJsonVersion,
+  updatePackageJsonVersion,
   info,
   title,
   log,
@@ -119,8 +120,9 @@ const version = async (releaseInfo) => {
   info('Increase version');
   status.addSteps([
     `Assure tag "v${releaseInfo.version}" doesn\'t already exist`,
-    'Run "npm preversion" and "npm version"',
-    'Push changes and tags to GitHub'
+    'Run "npm preversion"',
+    'Update "package.json"',
+    'Run "npm postversion"'
   ]);
 
   const tagAlreadyExists = await exec(`git rev-parse -q --verify v${releaseInfo.version}`).then(() => true).catch(() => false);
@@ -131,11 +133,13 @@ const version = async (releaseInfo) => {
     status.doneStep(true);
   }
 
-  await exec(`npm version v${releaseInfo.version}`, { stdio });
+  await exec('npm run preversion', { stdio });
   status.doneStep(true);
 
-  await exec('git push', { stdio });
-  await exec('git push --tags', { stdio });
+  updatePackageJsonVersion(releaseInfo.version);
+  status.doneStep(true);
+
+  await exec('npm run postversion', { stdio });
   status.doneStep(true);
 };
 
