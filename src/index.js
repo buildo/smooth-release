@@ -1,6 +1,6 @@
 import minimist from 'minimist';
 import t from 'tcomb';
-import { some } from 'lodash';
+import { some, omit } from 'lodash';
 import validations from './validations';
 import version from './npm/version';
 import publish from './npm/publish';
@@ -24,7 +24,7 @@ const defaultArgv = {
 const runDefault = !some(Object.keys(defaultArgv), arg => _argv[arg] === true);
 
 const argv = t.dict(t.String, t.maybe(t.Boolean))(
-  runDefault ? { ...defaultArgv, ..._argv } : _argv
+  omit(runDefault ? { ...defaultArgv, ..._argv } : _argv, '_')
 );
 const mainArgument = _argv._[0];
 
