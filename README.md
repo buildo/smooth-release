@@ -9,7 +9,7 @@ Simply run `smooth-release` from your root folder, that's all :)
 
 #### Custom settings
 - Every config value used by `smooth-release` is overridable: jump to [`.smooth-releaserc`](https://github.com/FrancescoCioria/smooth-release#smooth-releaserc) section to know more about it.
-- You can run or turn off specific modules by passing a set of CLI arguments: jump to [`CLI arguments`](https://github.com/FrancescoCioria/smooth-release#cli-arguments) section to know more about it.
+- You can run or turn off specific tasks also by passing a set of CLI arguments: jump to [`CLI arguments`](https://github.com/FrancescoCioria/smooth-release#cli-arguments) section to know more about it.
 
 
 ## What it does
@@ -81,28 +81,6 @@ Simply runs:
 npm publish
 ```
 
-## CLI arguments
-`smooth-release` comes with a safe default for each CLI argument. This is the `defaultArgv` JSON used by `smooth-release`:
-
-```js
-const defaultArgv = {
-  'no-validations': false, // don't run validations
-  'npm-publish': true, // run only publish step
-  'no-npm-publish': false, // don't run publish step
-  'npm-version': true, // run only version step
-  'gh-release': true, // run only gh-release step
-  'gh-release-all': false, // run only gh-release step and run it for every version tag not just current one
-  'changelog': true // run only changelog step
-};
-```
-
-Examples:
-```bash
-smooth-release --no-npm-publish # safely run "smooth-release" without publishing on "npm"
-smooth-release --changelog --gh-release-all # first time using smooth-release on your repo? this way you add a CHANGELOG.md and a GitHub release for every npm verison tag :)
-```
-
-
 ## `.smooth-releaserc`
 `smooth-release` comes with a safe default for each config value. This is the `defaultConfig` JSON used by `smooth-release`:
 
@@ -130,10 +108,40 @@ smooth-release --changelog --gh-release-all # first time using smooth-release on
     inSyncWithRemote: true,
     noUncommittedChanges: true,
     noUntrackedFiles: true
+  },
+  tasks: {
+    validations: true,
+    'npm-publish': null,
+    'npm-version': null,
+    'gh-release': null,
+    'gh-release-all': false,
+    changelog: null
   }
 }
 ```
 
-If you want to change parts of it you can define a JSON config file in the root directory of your project named `.smooth-releaserc`.
+setting a task to `null` means that `smooth-release` will prompt you every time before running the task:
+![image](https://cloud.githubusercontent.com/assets/4029499/21606902/e78f23d0-d1b2-11e6-9c17-b4bccf853856.png)
+
+If you want to change parts of the default config you can define a JSON file in the root directory of your project named `.smooth-releaserc`.
 
 The file will be recursively merged into `defaultConfig` (NB: arrays are replaced, not merged!).
+
+
+## CLI arguments
+`smooth-release` can be configured using CLI arguments as well.
+
+The main argument is passed directly to the `npm-version` task so you can use `smooth-release` like `npm version`:
+```bash
+smooth-release minor
+```
+
+You can also override the default behavior of each task by passing it as argument:
+
+Examples
+```bash
+smooth-release --no-npm-publish # safely run "smooth-release" without publishing on "npm"
+smooth-release --changelog --gh-release-all # first time using smooth-release on your repo? this way you add a CHANGELOG.md and a GitHub release for every npm verison tag :)
+```
+
+**NOTE:** if you explicitly pass a positive argument (like `--changelog`) `smooth-release` assumes you want to run **only** that task and turns off the other ones. So positive arguments are treated as a whitelist while negative arguments (like `--no-changelog`) are treated as a blacklist.
