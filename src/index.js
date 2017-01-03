@@ -1,4 +1,5 @@
 import minimist from 'minimist';
+import t from 'tcomb';
 import { some } from 'lodash';
 import validations from './validations';
 import version from './npm/version';
@@ -22,7 +23,9 @@ const defaultArgv = {
 
 const runDefault = !some(Object.keys(defaultArgv), arg => _argv[arg] === true);
 
-const argv = runDefault ? { ...defaultArgv, ..._argv } : _argv;
+const argv = t.dict(t.String, t.maybe(t.Boolean))(
+  runDefault ? { ...defaultArgv, ..._argv } : _argv
+);
 const mainArgument = _argv._[0];
 
 const promptUserBeforeRunningTask = async (task, message) => {
