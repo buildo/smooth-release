@@ -1,6 +1,6 @@
 import minimist from 'minimist';
 import t from 'tcomb';
-import { some, omit } from 'lodash';
+import { some, omit, mapValues } from 'lodash';
 import validations from './validations';
 import version from './npm/version';
 import publish from './npm/publish';
@@ -16,9 +16,11 @@ const { tasks: defaultArgv } = config;
 
 const runDefault = !some(Object.keys(defaultArgv), arg => _argv[arg] === true);
 
-const argv = t.dict(t.String, t.maybe(t.Boolean))(
-  omit(runDefault ? { ...defaultArgv, ..._argv } : _argv, '_')
-);
+const Argv = t.dict(t.String, t.maybe(t.Boolean));
+const argv = Argv(omit(
+  runDefault ? { ...defaultArgv, ..._argv } : mapValues(defaultArgv, (v, k) => _argv[k] || false),
+  '_'
+));
 const mainArgument = _argv._[0];
 
 const promptUserBeforeRunningTask = async (task, message) => {
