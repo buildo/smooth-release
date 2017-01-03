@@ -97,14 +97,6 @@ export const getPackageJsonName = () => getPackageJson().name;
 
 export const getPackageJsonVersion = () => getPackageJson().version;
 
-export const updatePackageJsonVersion = (version) => {
-  const packageJson = getPackageJson();
-  packageJson.version = version;
-
-  fs.writeFileSync(`${getRootFolderPath()}/package.json`, JSON.stringify(packageJson, null, 2));
-};
-
-
 // OCTOKAT
 export const getGithubOwnerAndRepo = () => {
   const remoteOriginUrl = execSync('git config --get remote.origin.url', { encoding: 'utf8' }).trim();
