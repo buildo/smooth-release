@@ -41,10 +41,6 @@ const main = async () => {
   try {
     !config.github.token && await askForToken();
 
-    await commitAndPush({ hasIncreasedVersion: true, hasUpdatedChangelog: false });
-
-    return;
-
     if (await promptUserBeforeRunningTask('validations', 'Do you want to run the "validations" task?')) {
       await validations();
     }
