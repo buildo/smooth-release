@@ -40,6 +40,14 @@ const Config = t.interface({
     inSyncWithRemote: t.Boolean,
     noUncommittedChanges: t.Boolean,
     noUntrackedFiles: t.Boolean
+  }),
+  tasks: t.interface({
+    changelog: t.maybe(t.Boolean),
+    validations: t.maybe(t.Boolean),
+    'npm-version': t.maybe(t.Boolean),
+    'npm-publish': t.maybe(t.Boolean),
+    'gh-release': t.maybe(t.Boolean),
+    'gh-release-all': t.maybe(t.Boolean)
   })
 });
 
@@ -66,6 +74,14 @@ const defaultConfig = {
     inSyncWithRemote: true,
     noUncommittedChanges: true,
     noUntrackedFiles: true
+  },
+  tasks: {
+    validations: true,
+    'npm-publish': null,
+    'npm-version': null,
+    'gh-release': null,
+    'gh-release-all': false,
+    changelog: null
   }
 };
 

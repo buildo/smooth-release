@@ -12,14 +12,7 @@ import config from './config';
 
 const _argv = minimist(process.argv.slice(2));
 
-const defaultArgv = {
-  validations: true,
-  'npm-publish': null,
-  'npm-version': null,
-  'gh-release': null,
-  'gh-release-all': false,
-  changelog: null
-};
+const { tasks: defaultArgv } = config;
 
 const runDefault = !some(Object.keys(defaultArgv), arg => _argv[arg] === true);
 
