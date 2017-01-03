@@ -14,11 +14,11 @@ const _argv = minimist(process.argv.slice(2));
 
 const defaultArgv = {
   validations: true,
-  'npm-publish': true,
-  'npm-version': true,
-  'gh-release': true,
+  'npm-publish': null,
+  'npm-version': null,
+  'gh-release': null,
   'gh-release-all': false,
-  changelog: true
+  changelog: null
 };
 
 const runDefault = !some(Object.keys(defaultArgv), arg => _argv[arg] === true);
