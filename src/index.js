@@ -23,8 +23,9 @@ const mainArgument = _argv._[0];
 
 const promptUserBeforeRunningTask = async (task, message) => {
   if (argv[task] === null) {
+    const hasConfirmed = await rl.confirmation(message);
     log('\n');
-    return await rl.confirmation(message);
+    return hasConfirmed;
   }
 
   return argv[task];
