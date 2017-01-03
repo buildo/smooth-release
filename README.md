@@ -144,4 +144,6 @@ smooth-release --no-npm-publish # safely run "smooth-release" without publishing
 smooth-release --changelog --gh-release-all # first time using smooth-release on your repo? this way you add a CHANGELOG.md and a GitHub release for every npm verison tag :)
 ```
 
-**NOTE:** if you explicitly pass a positive argument (like `--changelog`) `smooth-release` assumes you want to run **only** that task and turns off the other ones. So positive arguments are treated as a whitelist while negative arguments (like `--no-changelog`) are treated as a blacklist.
+If you specify one ore more negative argument, interactive prompts will be displayed for the remaining arguments (ex: `--no-changelog`).
+
+If you specify one or more positive argument, all interactive prompts will be disabled and only the whitelisted tasks will be run (ex: `--changelog`).
