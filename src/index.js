@@ -37,27 +37,27 @@ const main = async () => {
   try {
     !config.github.token && await askForToken();
 
-    if (await promptUserBeforeRunningTask('validations', 'Do you want to run the "validations"?')) {
+    if (await promptUserBeforeRunningTask('validations', 'Do you want to run the "validations" task?')) {
       await validations();
     }
 
-    if (await promptUserBeforeRunningTask('npm-version', 'Do you want to run "npm-version" task and increase the version of you library?')) {
+    if (await promptUserBeforeRunningTask('npm-version', 'Do you want to run the "npm-version" task and increase the version of you library?')) {
       await version(mainArgument);
     }
 
-    if (await promptUserBeforeRunningTask('changelog', 'Do you want to run "changelog" task and update the CHANGELOG.md file?')) {
+    if (await promptUserBeforeRunningTask('changelog', 'Do you want to run the "changelog" task and update the CHANGELOG.md file?')) {
       await changelog();
     }
 
-    if (await promptUserBeforeRunningTask('gh-release', 'Do you want to run "gh-release" task and create a release on GitHub for the last version of you library?')) {
+    if (await promptUserBeforeRunningTask('gh-release', 'Do you want to run the "gh-release" task and create a release on GitHub for the last version of you library?')) {
       await release({ all: false });
     }
 
-    if (await promptUserBeforeRunningTask('npm-publish', 'Do you want to run "npm-publish" task and publish your library on npm?')) {
+    if (await promptUserBeforeRunningTask('npm-publish', 'Do you want to run the "npm-publish" task and publish your library on npm?')) {
       await publish();
     }
 
-    if (await promptUserBeforeRunningTask('gh-release-all', 'Do you want to run "gh-release-all" task and create a release on GitHub for every version of your library?')) {
+    if (await promptUserBeforeRunningTask('gh-release-all', 'Do you want to run the "gh-release-all" task and create a release on GitHub for every version of your library?')) {
       await release({ all: true });
     }
   } catch (e) {
