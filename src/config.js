@@ -73,7 +73,8 @@ const defaultConfig = {
     branch: 'master',
     inSyncWithRemote: true,
     noUncommittedChanges: true,
-    noUntrackedFiles: true
+    noUntrackedFiles: true,
+    validNpmCredentials: true
   },
   tasks: {
     validations: true,

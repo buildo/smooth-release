@@ -1,5 +1,6 @@
 import { some } from 'lodash';
 import {
+  getPackageJsonName,
   getCurrentBranch,
   title,
   SmoothReleaseError,
@@ -66,6 +67,34 @@ const validateInSyncWithRemote = async () => {
   }
 };
 
+const validateNpmCredentials = async () => {
+  // THERE MUST BE A LOGGED IN USER WITH VALID CREDENTIALS
+  if (config.publish.validNpmCredentials) {
+    status.addSteps(['Validate user\'s credentials']);
+
+    const user = await exec('npm whoami', { encoding: 'utf8' }).then(n => n.trim()).catch(() => null);
+
+    if (!user) {
+      throw new CustomError('There is no logged in user for "npm"');
+    }
+
+    const packageJsonName = getPackageJsonName();
+
+    const packageAlreadyInRegistry = await exec(`npm show ${packageJsonName}`).then(() => true).catch(() => false);
+
+    if (packageAlreadyInRegistry) {
+      const collaborators = JSON.parse((await exec(`npm access ls-collaborators ${packageJsonName}`)).trim());
+      const userHasWritePermissions = collaborators[user] === 'read-write';
+
+      if (!userHasWritePermissions) {
+        throw new CustomError(`"${user}" does not have write permissions for "${packageJsonName}"`);
+      }
+    }
+
+    status.doneStep(true);
+  }
+};
+
 export default async () => {
   const shouldRunAtLeastOneValidation = some(config.publish);
   if (shouldRunAtLeastOneValidation) {
@@ -75,5 +104,6 @@ export default async () => {
     await validateNoUncommittedChanges();
     await validateNoUntrackedFiles();
     await validateInSyncWithRemote();
+    await validateNpmCredentials();
   }
 };

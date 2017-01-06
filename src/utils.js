@@ -89,9 +89,13 @@ export const isVersionTag = tag => (
 
 export const getRootFolderPath = () => execSync('git rev-parse --show-toplevel', { encoding: 'utf8' }).trim();
 
-export const getPackageJsonVersion = () => (
-  JSON.parse(fs.readFileSync(`${getRootFolderPath()}/package.json`)).version
+const getPackageJson = () => (
+  JSON.parse(fs.readFileSync(`${getRootFolderPath()}/package.json`))
 );
+
+export const getPackageJsonVersion = () => getPackageJson().version;
+
+export const getPackageJsonName = () => getPackageJson().name;
 
 
 // OCTOKAT
