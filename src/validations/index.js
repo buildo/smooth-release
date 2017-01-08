@@ -2,7 +2,7 @@ import { some } from 'lodash';
 import {
   getCurrentBranch,
   title,
-  CustomError,
+  SmoothReleaseError,
   status,
   exec
 } from '../utils';
@@ -14,7 +14,7 @@ const validateBranch = async () => {
     status.addSteps(['Validate branch']);
 
     if (getCurrentBranch() !== config.publish.branch) {
-      throw new CustomError(`You must be on "${config.publish.branch}" branch to perform this task. Aborting.`);
+      throw new SmoothReleaseError(`You must be on "${config.publish.branch}" branch to perform this task. Aborting.`);
     }
     status.doneStep(true);
   }
@@ -26,7 +26,7 @@ const validateNoUncommittedChanges = async () => {
     status.addSteps(['Validate uncommitted changes']);
 
     if (/^([ADRM]| [ADRM])/m.test(await exec('git status --porcelain'))) {
-      throw new CustomError('You have uncommited changes in your working tree. Aborting.');
+      throw new SmoothReleaseError('You have uncommited changes in your working tree. Aborting.');
     }
     status.doneStep(true);
   }
@@ -38,7 +38,7 @@ const validateNoUntrackedFiles = async () => {
     status.addSteps(['Validate untracked files']);
 
     if (/^\?\?/m.test(await exec('git status --porcelain'))) {
-      throw new CustomError('You have untracked files in your working tree. Aborting.');
+      throw new SmoothReleaseError('You have untracked files in your working tree. Aborting.');
     }
     status.doneStep(true);
   }
@@ -56,11 +56,11 @@ const validateInSyncWithRemote = async () => {
     const BASE = (await exec('git merge-base @ @{u}', { encoding: 'utf8' })).trim();
 
     if (LOCAL !== REMOTE && LOCAL === BASE) {
-      throw new CustomError('Your local branch is out-of-date. Please pull the latest remote changes. Aborting.');
+      throw new SmoothReleaseError('Your local branch is out-of-date. Please pull the latest remote changes. Aborting.');
     } else if (LOCAL !== REMOTE && REMOTE === BASE) {
-      throw new CustomError('Your local branch is ahead of its remote branch. Please push your local changes. Aborting.');
+      throw new SmoothReleaseError('Your local branch is ahead of its remote branch. Please push your local changes. Aborting.');
     } else if (LOCAL !== REMOTE) {
-      throw new CustomError('Your local and remote branches have diverged. Please put them in sync. Aborting.');
+      throw new SmoothReleaseError('Your local and remote branches have diverged. Please put them in sync. Aborting.');
     }
     status.doneStep(true);
   }

@@ -5,6 +5,7 @@ import Octokat from 'octokat';
 import console from 'better-console';
 import inquirer from 'inquirer';
 import { startsWith, every } from 'lodash';
+import errorEx from 'error-ex';
 import config from './config';
 
 // LOGS
@@ -66,19 +67,11 @@ export const exec = (command, settings) => {
 
 
 // CUSTOM ERROR
-export function CustomError(message) {
-  this.name = 'CustomError';
-  this.message = message || '';
-  const error = new Error(this.message);
-  error.name = this.name;
-  this.stack = error.stack;
-}
-CustomError.prototype = Object.create(Error.prototype);
-
+export const SmoothReleaseError = errorEx('SmoothReleaseError');
 
 export const onError = e => {
   status.stop();
-  if (e instanceof CustomError) {
+  if (e instanceof SmoothReleaseError) {
     error(`\nError: ${e.message}\n`);
   } else {
     error('\n', e.stack);

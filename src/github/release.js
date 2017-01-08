@@ -7,7 +7,7 @@ import {
   title,
   info,
   status,
-  CustomError,
+  SmoothReleaseError,
   isVersionTag
 } from '../utils';
 import getAllTags from '../modules/getAllTags';
@@ -80,7 +80,7 @@ const postRelease = async release => {
   } catch (e) {
     status.doneStep(false);
     const { message } = JSON.parse(e.message);
-    throw new CustomError(message === 'Validation Failed' ? `Release "${release.tag_name}" already exists` : message);
+    throw new SmoothReleaseError(message === 'Validation Failed' ? `Release "${release.tag_name}" already exists` : message);
   }
 };
 
