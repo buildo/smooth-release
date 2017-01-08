@@ -80,15 +80,10 @@ const validateNpmCredentials = async () => {
 
     const packageJsonName = getPackageJsonName();
 
-    const packageAlreadyInRegistry = await exec(`npm show ${packageJsonName}`).then(() => true).catch(() => false);
+    const collaborators = JSON.parse(await exec(`npm access ls-collaborators ${packageJsonName}`).then(s => s.trim()).catch(() => null));
 
-    if (packageAlreadyInRegistry) {
-      const collaborators = JSON.parse((await exec(`npm access ls-collaborators ${packageJsonName}`)).trim());
-      const userHasWritePermissions = collaborators[user] === 'read-write';
-
-      if (!userHasWritePermissions) {
-        throw new CustomError(`"${user}" does not have write permissions for "${packageJsonName}"`);
-      }
+    if (collaborators && collaborators[user] !== 'read-write') {
+      throw new CustomError(`"${user}" does not have write permissions for "${packageJsonName}"`);
     }
 
     status.doneStep(true);
