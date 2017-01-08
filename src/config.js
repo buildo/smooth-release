@@ -39,7 +39,8 @@ const Config = t.interface({
     branch: t.maybe(t.String),
     inSyncWithRemote: t.Boolean,
     noUncommittedChanges: t.Boolean,
-    noUntrackedFiles: t.Boolean
+    noUntrackedFiles: t.Boolean,
+    validNpmCredentials: t.Boolean
   }),
   tasks: t.interface({
     changelog: t.maybe(t.Boolean),
