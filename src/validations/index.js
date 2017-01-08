@@ -70,20 +70,23 @@ const validateInSyncWithRemote = async () => {
 const validateNpmCredentials = async () => {
   // THERE MUST BE A LOGGED IN USER WITH VALID CREDENTIALS
   if (config.publish.validNpmCredentials) {
-    status.addSteps(['Validate user\'s credentials']);
+    status.addSteps(['Validate user\'s credentials for "npm"']);
 
-    const user = await exec('npm whoami', { encoding: 'utf8' }).then(n => n.trim()).catch(() => null);
+    const trim = s => s.trim();
+
+    const user = await exec('npm whoami', { encoding: 'utf8' }).then(trim).catch(() => null);
 
     if (!user) {
-      throw new CustomError('There is no logged in user for "npm"');
+      throw new SmoothReleaseError('There is no logged in user for "npm"');
     }
 
     const packageJsonName = getPackageJsonName();
 
-    const collaborators = JSON.parse(await exec(`npm access ls-collaborators ${packageJsonName}`).then(s => s.trim()).catch(() => null));
+    const collaborators = JSON.parse(await exec(`npm access ls-collaborators ${packageJsonName}`).then(trim).catch(() => null));
+    const packageAlreadyInRegistry = !!collaborators;
 
-    if (collaborators && collaborators[user] !== 'read-write') {
-      throw new CustomError(`"${user}" does not have write permissions for "${packageJsonName}"`);
+    if (packageAlreadyInRegistry && collaborators[user] !== 'read-write') {
+      throw new SmoothReleaseError(`"${user}" does not have write permissions for "${packageJsonName}"`);
     }
 
     status.doneStep(true);
