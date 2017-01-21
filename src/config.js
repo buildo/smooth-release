@@ -4,6 +4,7 @@ import minimist from 'minimist';
 import t from 'tcomb';
 import { mergeWith } from 'lodash';
 import getToken from './github/token';
+import console from 'better-console';
 
 const { token } = minimist(process.argv.slice(2));
 
@@ -39,7 +40,8 @@ const Config = t.interface({
     branch: t.maybe(t.String),
     inSyncWithRemote: t.Boolean,
     noUncommittedChanges: t.Boolean,
-    noUntrackedFiles: t.Boolean
+    noUntrackedFiles: t.Boolean,
+    validNpmCredentials: t.Boolean
   }),
   tasks: t.interface({
     changelog: t.maybe(t.Boolean),
@@ -73,7 +75,8 @@ const defaultConfig = {
     branch: 'master',
     inSyncWithRemote: true,
     noUncommittedChanges: true,
-    noUntrackedFiles: true
+    noUntrackedFiles: true,
+    validNpmCredentials: true
   },
   tasks: {
     validations: true,
@@ -90,4 +93,15 @@ const config = mergeWith(
   (a, b) => t.Array.is(a) ? b : undefined
 );
 
-export default Config(config);
+
+let validatedConfig = null;
+try {
+  validatedConfig = Config(config);
+} catch (e) {
+  console.error('\n".smooth-releaserc" is invalid.\n');
+  console.error(e);
+  console.error();
+  process.exit(1);
+}
+
+export default validatedConfig;
