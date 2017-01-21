@@ -9,7 +9,7 @@ import {
   info,
   status,
   exec,
-  CustomError
+  SmoothReleaseError
 } from '../utils';
 import getAllTags from '../modules/getAllTags';
 import getAllClosedIssues from '../modules/getAllClosedIssues';
@@ -161,7 +161,7 @@ const saveChangelog = async changelogMarkdown => {
     await exec('git push');
     status.doneStep(true);
   } catch (e) {
-    throw new CustomError('CHANGELOG.md hasn\'t changed');
+    throw new SmoothReleaseError('CHANGELOG.md hasn\'t changed');
   }
 };
 

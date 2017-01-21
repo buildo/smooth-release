@@ -28,6 +28,7 @@
     "babel-runtime": "^6.18.0",
     "better-console": "^0.2.4",
     "elegant-status": "^1.1.0",
+    "error-ex": "^1.3.0",
     "inquirer": "^0.10.1",
     "lodash": "^4.16.4",
     "minimist": "^1.2.0",

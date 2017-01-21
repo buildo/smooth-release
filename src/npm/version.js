@@ -8,7 +8,7 @@ import {
   title,
   log,
   emptyLine,
-  CustomError,
+  SmoothReleaseError,
   status,
   rl,
   exec
@@ -44,7 +44,7 @@ const computeRelease = async ({ manualVersion, packageJsonVersion }) => {
       const unpublishedIssues = issuesUpdatedAfterLastTag.filter(i => i.closedAt >= new Date(lastVersionTagDateTime));
 
       if (unpublishedIssues.length === 0) {
-        throw new CustomError('Can\'t find any issue closed after last publish. Are you sure there are new features to publish?');
+        throw new SmoothReleaseError('Can\'t find any issue closed after last publish. Are you sure there are new features to publish?');
       }
       breakingIssuesUpdatedAfterLastTag = await github.issues.fetch({ labels: 'breaking', state: 'closed', since: lastVersionTagDateTime });
     } else {
@@ -78,7 +78,7 @@ const computeRelease = async ({ manualVersion, packageJsonVersion }) => {
     const version = semver.valid(manualVersion) || semver.inc(packageJsonVersion, manualVersion);
 
     if (semver.lte(version, packageJsonVersion)) {
-      throw new CustomError(`You can't pass a version lower than or equal to "${packageJsonVersion}" (current version)`);
+      throw new SmoothReleaseError(`You can't pass a version lower than or equal to "${packageJsonVersion}" (current version)`);
     }
 
     const isBeta = semver.satisfies(packageJsonVersion, '< 1');
@@ -109,7 +109,7 @@ const confirmation = async releaseInfo => {
   });
 
   if (!(await rl.confirmation('If you continue you will update "package.json" and add a tag. Are you sure?'))) {
-    throw new CustomError('You refused the computed release. Aborting');
+    throw new SmoothReleaseError('You refused the computed release. Aborting');
   }
 
   emptyLine();
