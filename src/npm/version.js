@@ -118,9 +118,18 @@ const confirmation = async releaseInfo => {
 const version = async (releaseInfo) => {
   info('Increase version');
   status.addSteps([
+    `Assure tag "v${releaseInfo.version}" doesn\'t already exist`,
     'Run "npm preversion" and "npm version"',
     'Push changes and tags to GitHub'
   ]);
+
+  const tagAlreadyExists = await exec(`git rev-parse -q --verify v${releaseInfo.version}`).then(() => true).catch(() => false);
+
+  if (tagAlreadyExists) {
+    throw new SmoothReleaseError(`tag "v${releaseInfo.version}" already exists.`);
+  } else {
+    status.doneStep(true);
+  }
 
   await exec(`npm version v${releaseInfo.version}`, { stdio });
   status.doneStep(true);
