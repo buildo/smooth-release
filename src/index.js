@@ -6,6 +6,7 @@ import version from './npm/version';
 import publish from './npm/publish';
 import release from './github/release';
 import changelog from './github/changelog';
+import commitAndPush from './commitAndPush';
 import { askForToken } from './github/token';
 import { onError, rl, log } from './utils';
 import config from './config';
@@ -34,6 +35,9 @@ const promptUserBeforeRunningTask = async (task, message) => {
 };
 
 const main = async () => {
+  let hasIncreasedVersion = false;
+  let hasUpdatedChangelog = false;
+
   try {
     !config.github.token && await askForToken();
 
@@ -41,12 +45,18 @@ const main = async () => {
       await validations();
     }
 
-    if (await promptUserBeforeRunningTask('npm-version', 'Do you want to run the "npm-version" task and increase the version of you library?')) {
+    if (await promptUserBeforeRunningTask('npm-version', 'Do you want to run the "npm-version" task and increase the version of your library?')) {
       await version(mainArgument);
+      hasIncreasedVersion = true;
     }
 
     if (await promptUserBeforeRunningTask('changelog', 'Do you want to run the "changelog" task and update the CHANGELOG.md file?')) {
       await changelog();
+      hasUpdatedChangelog = true;
+    }
+
+    if (hasIncreasedVersion || hasUpdatedChangelog) {
+      await commitAndPush({ hasIncreasedVersion, hasUpdatedChangelog });
     }
 
     if (await promptUserBeforeRunningTask('gh-release', 'Do you want to run the "gh-release" task and create a release on GitHub for the last version of you library?')) {

@@ -34,7 +34,7 @@ const Status = () => {
     addSteps: newSteps => {
       !done && steps && emptyLine();
 
-      steps = (steps || []).concat(newSteps);
+      steps = (steps || []).concat(newSteps.filter(x => x));
       !done && runNextStep(); // if idle run first step in the list
     },
     doneStep: res => {
@@ -93,10 +93,9 @@ const getPackageJson = () => (
   JSON.parse(fs.readFileSync(`${getRootFolderPath()}/package.json`))
 );
 
-export const getPackageJsonVersion = () => getPackageJson().version;
-
 export const getPackageJsonName = () => getPackageJson().name;
 
+export const getPackageJsonVersion = () => getPackageJson().version;
 
 // OCTOKAT
 export const getGithubOwnerAndRepo = () => {

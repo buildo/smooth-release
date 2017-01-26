@@ -28,13 +28,14 @@ In order to proceed each one of these validations must pass (they can be optiona
 2. Local branch must be in sync with remote
 3. No uncommited changes in the working tree
 4. No untracked filed in the working tree
+5. User must be logged in "npm" and have write permissions for current package
 
-### Increase version and push new commit and tag
+### Increase version
 
 
 #### Check if version should be considered "breaking" or not
 `smooth-release` automatically detects if the next version should be "breaking" or not.
-If a version is "breaking" it will be a `major` otherwise it wil be a `patch`.
+If a version is "breaking" it will be a `major` otherwise it will be a `patch`.
 `smooth-release` never creates a `minor` version.
 
 To decide if a version is "breaking", `smooth-release` analyzes every closed issue from GitHub: if there is **at least** one *valid* closed issue marked as "breaking" the version will be breaking.
@@ -51,35 +52,40 @@ smooth-release 5.4.6
 ```
 
 #### npm version and push
-Runs in order:
+Runs:
 
-1. `npm version ${newVersion}`
-3. `git push`
-4. `git push --tags` (never forget to push tags again!)
+1. `npm version ${newVersion} --no-git-tag-version`
 
 ### Generate CHANGELOG.md
-The script to generate the changelog is basically a replic in JavaScript of [github-changelog-generator](https://github.com/skywinder/github-changelog-generator). The only difference is that it only uses closed isses (PRs are ignored).
+The script to generate the changelog is basically a replica in JavaScript of [github-changelog-generator](https://github.com/skywinder/github-changelog-generator). The only difference is that it only uses closed issues (PRs are ignored).
 
 This script is stateless: every time it's run it replaces CHANGELOG.md with a new one.
-
-**If** the newly generated changelog is different from any previous one it automatically pushes a commit "Update CHANGELOG.md" on origin.
 
 You can see an example by looking at CHANGELOG.md file on this repo: https://github.com/FrancescoCioria/smooth-release/blob/master/CHANGELOG.md.
 
 ### Create release on GitHub with link to CHANGELOG.md section
 It statelessly creates a GitHub release for the last npm-version tag.
 
-`smooth-release` defines an *npm-version tag* as a tag named `v1.2.3` where 1, 2, 3 can be any number.
+`smooth-release` defines an *npm-version tag* as a tag named `v1.2.3` where `1`, `2`, `3` can be any number.
 
-The release is named as the tag (ex: v1.2.3) and the body contains a link to the relative section in CHANGELOG.md.
+The release is named after the tag (ex: v1.2.3) and the body contains a link to the relative section in CHANGELOG.md.
 
-You can see an example by looking at any release on this repo: https://github.com/FrancescoCioria/smooth-release/releases.
+You can see an example by looking at any release from this repo: https://github.com/FrancescoCioria/smooth-release/releases.
+
+### Create release commit and push it on origin
+This step is run only if there are changes to commit. This may happen if you run one of these scripts:
+- npm-version (modifies `package.json`)
+- changelog (modifies `CHANGELOG.md`)
+
+If the only file that changed is `CHANGELOG.md` the new commit will have as message `"Update CHANGELOG.md"`.
+
+Otherwise, if you run also `npm-version` script and therefore the `package.json` has been updated, the new commit will have the standard version message (`"1.2.3"`) and will also have the npm-version tag (`v.1.2.3`).
+
 
 ### Publish on `npm`
-Simply runs:
-```bash
-npm publish
-```
+Runs:
+
+1. `npm publish`
 
 ## `.smooth-releaserc`
 `smooth-release` comes with a safe default for each config value. This is the `defaultConfig` JSON used by `smooth-release`:
@@ -107,7 +113,8 @@ npm publish
     branch: 'master',
     inSyncWithRemote: true,
     noUncommittedChanges: true,
-    noUntrackedFiles: true
+    noUntrackedFiles: true,
+    validNpmCredentials: true
   },
   tasks: {
     validations: true,
@@ -120,7 +127,7 @@ npm publish
 }
 ```
 
-setting a task to `null` means that `smooth-release` will prompt you every time before running the task:
+If you set a task to `null`, `smooth-release` will prompt you every time before running the task:
 ![image](https://cloud.githubusercontent.com/assets/4029499/21606902/e78f23d0-d1b2-11e6-9c17-b4bccf853856.png)
 
 If you want to change parts of the default config you can define a JSON file in the root directory of your project named `.smooth-releaserc`.

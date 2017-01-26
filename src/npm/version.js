@@ -119,8 +119,7 @@ const version = async (releaseInfo) => {
   info('Increase version');
   status.addSteps([
     `Assure tag "v${releaseInfo.version}" doesn\'t already exist`,
-    'Run "npm preversion" and "npm version"',
-    'Push changes and tags to GitHub'
+    'Run "npm version --no-git-tag-version"'
   ]);
 
   const tagAlreadyExists = await exec(`git rev-parse -q --verify v${releaseInfo.version}`).then(() => true).catch(() => false);
@@ -131,11 +130,7 @@ const version = async (releaseInfo) => {
     status.doneStep(true);
   }
 
-  await exec(`npm version v${releaseInfo.version}`, { stdio });
-  status.doneStep(true);
-
-  await exec('git push', { stdio });
-  await exec('git push --tags', { stdio });
+  await exec(`npm version v${releaseInfo.version} --no-git-tag-version`, { stdio });
   status.doneStep(true);
 };
 

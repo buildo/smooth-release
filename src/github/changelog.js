@@ -146,21 +146,15 @@ const generateChangelog = ({ closedIssues, tagsWithCreatedAt }) => {
 const saveChangelog = async changelogMarkdown => {
   info('Save CHANGELOG.md on GitHub');
   status.addSteps([
-    'Save changelog locally',
-    'Update changelog on GitHub'
+    'Save changelog locally'
   ]);
 
   // SAVE changelog
   fs.writeFileSync(`${getRootFolderPath()}/${config.github.changelog.outputPath}`, changelogMarkdown);
   status.doneStep(true);
 
-  // PUSH changes
-  try {
-    await exec(`git add ${config.github.changelog.outputPath}`);
-    await exec('git commit -m "Update CHANGELOG.md"');
-    await exec('git push');
-    status.doneStep(true);
-  } catch (e) {
+  // THROW error if changelog hasn't changed
+  if ((await exec(`git status --porcelain -- ${config.github.changelog.outputPath}`)).trim().length === 0) {
     throw new SmoothReleaseError('CHANGELOG.md hasn\'t changed');
   }
 };
