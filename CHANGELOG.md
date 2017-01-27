@@ -1,6 +1,19 @@
 #  Change Log
 
+## [Unreleased](https://github.com/FrancescoCioria/smooth-release/tree/HEAD)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v6.0.0...HEAD)
 
+#### Fixes (bugs & defects):
+
+- Shouldn't crash if tag already exists [#62](https://github.com/FrancescoCioria/smooth-release/issues/62)
+
+#### New features:
+
+- add "validation" to check if user has valid npm credentials for package [#58](https://github.com/FrancescoCioria/smooth-release/issues/58)
+
+#### Breaking:
+
+- Changelog is committed after the tag [#53](https://github.com/FrancescoCioria/smooth-release/issues/53)
 
 ## [v6.0.0](https://github.com/FrancescoCioria/smooth-release/tree/v6.0.0) (2017-01-03)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v5.0.4...v6.0.0)
