@@ -3,12 +3,15 @@ import fs from 'fs';
 import elegantStatus from 'elegant-status';
 import Octokat from 'octokat';
 import console from 'better-console';
+import clc from 'cli-color';
 import inquirer from 'inquirer';
 import { startsWith, every } from 'lodash';
 import errorEx from 'error-ex';
 import config from './config';
 
 // LOGS
+export const bold = clc.bold;
+
 export const log = console.log;
 export const info = console.info;
 export const warning = console.warn;
