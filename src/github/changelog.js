@@ -5,6 +5,7 @@ import {
   github,
   getGithubOwnerAndRepo,
   getRootFolderPath,
+  getPackageJsonVersion,
   title,
   info,
   status,
@@ -117,24 +118,28 @@ const getDataFromGitHub = async () => {
   return { closedIssues, tagsWithCreatedAt };
 };
 
-const generateChangelog = ({ closedIssues, tagsWithCreatedAt }) => {
+const generateChangelog = ({ closedIssues, tagsWithCreatedAt, hasIncreasedVersion }) => {
   info('Generate CHANGELOG.md');
   status.addSteps([
     'Group closed issues by relative tag',
     'Generate changelog for each tag'
   ]);
 
+  const tags = hasIncreasedVersion ?
+    [{ name: `v${getPackageJsonVersion()}`, createdAt: new Date() }, ...tagsWithCreatedAt] :
+    tagsWithCreatedAt;
+
   // GROUP issues by tag
-  const issuesGroupedByTag = groupIssuesByTag(closedIssues, tagsWithCreatedAt);
+  const issuesGroupedByTag = groupIssuesByTag(closedIssues, tags);
   status.doneStep(true);
 
   // WRITE changelog for each tag
-  const changelogSections = tagsWithCreatedAt.map((tag, i) => (
-    createChangelogSection({ tag, previousTag: tagsWithCreatedAt[i + 1], issues: issuesGroupedByTag[tag.name] })
+  const changelogSections = tags.map((tag, i) => (
+    createChangelogSection({ tag, previousTag: tags[i + 1], issues: issuesGroupedByTag[tag.name] })
   ));
 
   // WRITE changelog for unreleased issues (without tag)
-  const unreleased = issuesGroupedByTag.unreleased ? createChangelogSection({ previousTag: tagsWithCreatedAt[0], tag: null, issues: issuesGroupedByTag.unreleased }) : '';
+  const unreleased = issuesGroupedByTag.unreleased ? createChangelogSection({ previousTag: tags[0], tag: null, issues: issuesGroupedByTag.unreleased }) : '';
 
   // WRITE complete changelog
   const changelogMarkdown = `#  Change Log\n\n${[unreleased].concat(changelogSections).join('\n\n')}`;
@@ -159,12 +164,12 @@ const saveChangelog = async changelogMarkdown => {
   }
 };
 
-export default async () => {
+export default async ({ hasIncreasedVersion }) => {
   title('Update changelog');
 
   const { closedIssues, tagsWithCreatedAt } = await getDataFromGitHub();
 
-  const changelogMarkdown = generateChangelog({ closedIssues, tagsWithCreatedAt });
+  const changelogMarkdown = generateChangelog({ closedIssues, tagsWithCreatedAt, hasIncreasedVersion });
 
   await saveChangelog(changelogMarkdown);
 
