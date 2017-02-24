@@ -51,7 +51,7 @@ const main = async () => {
     }
 
     if (await promptUserBeforeRunningTask('changelog', 'Do you want to run the "changelog" task and update the CHANGELOG.md file?')) {
-      await changelog();
+      await changelog({ hasIncreasedVersion });
       hasUpdatedChangelog = true;
     }
 
