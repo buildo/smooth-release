@@ -8,11 +8,11 @@
 #### Fixes (bugs & defects):
 
 - --no-npm-publish does not disable npm validation [#72](https://github.com/FrancescoCioria/smooth-release/issues/72)
+- Changelog does not consider the new tag added by npm-version task [#68](https://github.com/FrancescoCioria/smooth-release/issues/68)
 
 #### New features:
 
 - add command to show version [#71](https://github.com/FrancescoCioria/smooth-release/issues/71)
-- Changelog contains `Unreleased` if using `smooth-release minor` [#68](https://github.com/FrancescoCioria/smooth-release/issues/68)
 
 ## [v7.0.0](https://github.com/FrancescoCioria/smooth-release/tree/v7.0.0) (2017-01-27)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v6.0.0...v7.0.0)
