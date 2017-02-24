@@ -93,7 +93,7 @@ const validateNpmCredentials = async () => {
   }
 };
 
-export default async () => {
+export default async ({ mayPublishOnNpm }) => {
   const shouldRunAtLeastOneValidation = some(config.publish);
   if (shouldRunAtLeastOneValidation) {
     title('Run validations');
@@ -102,6 +102,6 @@ export default async () => {
     await validateNoUncommittedChanges();
     await validateNoUntrackedFiles();
     await validateInSyncWithRemote();
-    await validateNpmCredentials();
+    mayPublishOnNpm && await validateNpmCredentials();
   }
 };

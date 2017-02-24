@@ -42,7 +42,7 @@ const main = async () => {
     !config.github.token && await askForToken();
 
     if (await promptUserBeforeRunningTask('validations', 'Do you want to run the "validations" task?')) {
-      await validations();
+      await validations({ mayPublishOnNpm: argv['npm-publish'] !== false });
     }
 
     if (await promptUserBeforeRunningTask('npm-version', 'Do you want to run the "npm-version" task and increase the version of your library?')) {
