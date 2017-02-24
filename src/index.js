@@ -10,6 +10,7 @@ import commitAndPush from './commitAndPush';
 import { askForToken } from './github/token';
 import { onError, rl, log } from './utils';
 import config from './config';
+import packageJson from '../package.json';
 
 const _argv = minimist(process.argv.slice(2));
 
@@ -37,6 +38,10 @@ const promptUserBeforeRunningTask = async (task, message) => {
 const main = async () => {
   let hasIncreasedVersion = false;
   let hasUpdatedChangelog = false;
+
+  if (_argv.v || _argv.version) {
+    return log(packageJson.version);
+  }
 
   try {
     !config.github.token && await askForToken();
