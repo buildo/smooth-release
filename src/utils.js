@@ -3,6 +3,7 @@ import fs from 'fs';
 import elegantStatus from 'elegant-status';
 import Octokat from 'octokat';
 import console from 'better-console';
+import clc from 'cli-color';
 import inquirer from 'inquirer';
 import { startsWith, every } from 'lodash';
 import errorEx from 'error-ex';
@@ -17,6 +18,9 @@ export const title = title => (
   warning(`\n${title.toUpperCase()}\n${title.split('').map(() => '-').join('')}\n`)
 );
 export const emptyLine = () => log('');
+
+// LOGS MODIFIERS
+export const bold = clc.bold;
 
 
 // STATUS
