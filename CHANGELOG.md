@@ -1,7 +1,21 @@
 #  Change Log
 
-## [Unreleased](https://github.com/FrancescoCioria/smooth-release/tree/HEAD)
-[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v6.0.0...HEAD)
+
+
+## [v7.0.1](https://github.com/FrancescoCioria/smooth-release/tree/v7.0.1) (2017-02-24)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v7.0.0...v7.0.1)
+
+#### Fixes (bugs & defects):
+
+- --no-npm-publish does not disable npm validation [#72](https://github.com/FrancescoCioria/smooth-release/issues/72)
+
+#### New features:
+
+- add command to show version [#71](https://github.com/FrancescoCioria/smooth-release/issues/71)
+- Changelog contains `Unreleased` if using `smooth-release minor` [#68](https://github.com/FrancescoCioria/smooth-release/issues/68)
+
+## [v7.0.0](https://github.com/FrancescoCioria/smooth-release/tree/v7.0.0) (2017-01-27)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v6.0.0...v7.0.0)
 
 #### Fixes (bugs & defects):
 
