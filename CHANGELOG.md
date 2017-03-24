@@ -2,17 +2,24 @@
 
 
 
+## [v7.0.3](https://github.com/FrancescoCioria/smooth-release/tree/v7.0.3) (2017-03-24)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v7.0.2...v7.0.3)
+
+#### New features:
+
+- add validation for .npmignore or package.json's files [#69](https://github.com/FrancescoCioria/smooth-release/issues/69)
+
 ## [v7.0.2](https://github.com/FrancescoCioria/smooth-release/tree/v7.0.2) (2017-03-24)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v7.0.1...v7.0.2)
 
 #### Fixes (bugs & defects):
 
 - npm validation does not handle org teams [#80](https://github.com/FrancescoCioria/smooth-release/issues/80)
+- Error messages not displayed properly on node 7 [#64](https://github.com/FrancescoCioria/smooth-release/issues/64)
 
 #### New features:
 
 - add validation for github access_token [#78](https://github.com/FrancescoCioria/smooth-release/issues/78)
-- Error messages not displayed properly on node 7 [#64](https://github.com/FrancescoCioria/smooth-release/issues/64)
 
 ## [v7.0.1](https://github.com/FrancescoCioria/smooth-release/tree/v7.0.1) (2017-02-24)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v7.0.0...v7.0.1)
