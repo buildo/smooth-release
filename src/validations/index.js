@@ -153,6 +153,8 @@ const validatePackageFilesAreFilteredBeforePublish = async () => {
     if (hasPackageJsonFiles && hasNpmIgnore) {
       throw new SmoothReleaseError('A project can\'t have both a ".npmignore" blacklist and a "package.json.files" whitelist');
     }
+
+    status.doneStep(true);
   }
 };
 
