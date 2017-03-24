@@ -10,6 +10,8 @@ import errorEx from 'error-ex';
 import config from './config';
 
 // LOGS
+export const bold = clc.bold;
+
 export const log = console.log;
 export const info = console.info;
 export const warning = console.warn;
