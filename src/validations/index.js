@@ -126,11 +126,11 @@ export default async ({ mayPublishOnNpm }) => {
   if (shouldRunAtLeastOneValidation) {
     title('Run validations');
 
-    await validateGithubToken();
     await validateBranch();
     await validateNoUncommittedChanges();
     await validateNoUntrackedFiles();
     await validateInSyncWithRemote();
+    await validateGithubToken();
     mayPublishOnNpm && await validateNpmCredentials();
   }
 };
