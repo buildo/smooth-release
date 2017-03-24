@@ -2,6 +2,13 @@
 
 
 
+## [v8.0.0](https://github.com/FrancescoCioria/smooth-release/tree/v8.0.0) (2017-03-24)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v7.0.3...v8.0.0)
+
+#### Breaking:
+
+- "files" should be the default for config.packageFilesFilter validations [#83](https://github.com/FrancescoCioria/smooth-release/issues/83)
+
 ## [v7.0.3](https://github.com/FrancescoCioria/smooth-release/tree/v7.0.3) (2017-03-24)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v7.0.2...v7.0.3)
 
