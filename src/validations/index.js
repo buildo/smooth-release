@@ -1,4 +1,4 @@
-import { some } from 'lodash';
+import { some, includes, flatten } from 'lodash';
 import {
   getPackageJsonName,
   getCurrentBranch,
@@ -88,7 +88,16 @@ const validateNpmCredentials = async () => {
     const packageAlreadyInRegistry = !!collaborators;
 
     if (packageAlreadyInRegistry && collaborators[user] !== 'read-write') {
-      throw new SmoothReleaseError(`"${user}" does not have write permissions for "${packageJsonName}"`);
+
+      const teamsWithWriteAccess = Object.keys(collaborators).filter(name => includes(name, ':') && collaborators[name] === 'read-write');
+
+      const teamMembers = flatten(await Promise.all(teamsWithWriteAccess.map(async team => (
+        JSON.parse(await exec(`npm team ls ${team}`).then(trim).catch(() => null))
+      ))));
+
+      if (!includes(teamMembers, user)) {
+        throw new SmoothReleaseError(`"${user}" does not have write permissions for "${packageJsonName}"`);
+      }
     }
 
     status.doneStep(true);
