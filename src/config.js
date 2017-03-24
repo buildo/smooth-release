@@ -41,7 +41,8 @@ const Config = t.interface({
     inSyncWithRemote: t.Boolean,
     noUncommittedChanges: t.Boolean,
     noUntrackedFiles: t.Boolean,
-    validNpmCredentials: t.Boolean
+    validNpmCredentials: t.Boolean,
+    validGithubToken: t.Boolean
   }),
   tasks: t.interface({
     changelog: t.maybe(t.Boolean),
@@ -76,7 +77,8 @@ const defaultConfig = {
     inSyncWithRemote: true,
     noUncommittedChanges: true,
     noUntrackedFiles: true,
-    validNpmCredentials: true
+    validNpmCredentials: true,
+    validGithubToken: true
   },
   tasks: {
     validations: true,

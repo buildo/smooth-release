@@ -110,7 +110,7 @@ export const getGithubOwnerAndRepo = () => {
   return { owner, repo };
 };
 
-const octokat = new Octokat({ token: config.github.token });
+export const octokat = new Octokat({ token: config.github.token });
 
 const { owner, repo } = getGithubOwnerAndRepo();
 export const github = octokat.repos(`${owner}/${repo}`);

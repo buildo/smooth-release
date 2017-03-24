@@ -5,9 +5,11 @@ import {
   title,
   SmoothReleaseError,
   status,
-  exec
+  exec,
+  octokat
 } from '../utils';
 import config from '../config';
+import { askForToken } from '../github/token';
 
 const validateBranch = async () => {
   // ENFORCE BRANCH
@@ -93,11 +95,29 @@ const validateNpmCredentials = async () => {
   }
 };
 
+const validateGithubToken = async () => {
+  // THE STORED GITHUB TOKEN MUST BE VALID
+  if (config.publish.validGithubToken) {
+    status.addSteps(['Validate user\'s token for "GitHub"']);
+
+    const res = await octokat.user.fetch().catch(x => x);
+
+    if (res.status === 401) {
+      status.doneStep(false);
+      await askForToken('The stored GitHub token is invalid. Please write here a valid token:');
+    } else {
+      status.doneStep(true);
+    }
+
+  }
+};
+
 export default async ({ mayPublishOnNpm }) => {
   const shouldRunAtLeastOneValidation = some(config.publish);
   if (shouldRunAtLeastOneValidation) {
     title('Run validations');
 
+    await validateGithubToken();
     await validateBranch();
     await validateNoUncommittedChanges();
     await validateNoUntrackedFiles();
