@@ -101,6 +101,8 @@ export const getPackageJsonName = () => getPackageJson().name;
 
 export const getPackageJsonVersion = () => getPackageJson().version;
 
+export const getPackageJsonFiles = () => getPackageJson().files;
+
 // OCTOKAT
 export const getGithubOwnerAndRepo = () => {
   const remoteOriginUrl = execSync('git config --get remote.origin.url', { encoding: 'utf8' }).trim();

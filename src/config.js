@@ -42,7 +42,8 @@ const Config = t.interface({
     noUncommittedChanges: t.Boolean,
     noUntrackedFiles: t.Boolean,
     validNpmCredentials: t.Boolean,
-    validGithubToken: t.Boolean
+    validGithubToken: t.Boolean,
+    packageFilesFilter: t.union([t.enums.of(['npmignore', 'files']), t.Boolean])
   }),
   tasks: t.interface({
     changelog: t.maybe(t.Boolean),
@@ -78,7 +79,8 @@ const defaultConfig = {
     noUncommittedChanges: true,
     noUntrackedFiles: true,
     validNpmCredentials: true,
-    validGithubToken: true
+    validGithubToken: true,
+    packageFilesFilter: true
   },
   tasks: {
     validations: true,

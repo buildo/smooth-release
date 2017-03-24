@@ -1,6 +1,9 @@
+import fs from 'fs';
 import { some, includes, flatten } from 'lodash';
 import {
   getPackageJsonName,
+  getPackageJsonFiles,
+  getRootFolderPath,
   getCurrentBranch,
   title,
   SmoothReleaseError,
@@ -121,16 +124,49 @@ const validateGithubToken = async () => {
   }
 };
 
+const validatePackageFilesAreFilteredBeforePublish = async () => {
+  // THERE MUST BE ONE OF ".npmignore" OR "package.json.files"
+  if (config.publish.packageFilesFilter !== false) {
+    const hasPackageJsonFiles = !!getPackageJsonFiles();
+    const hasNpmIgnore = fs.existsSync(`${getRootFolderPath()}/.npmignore`);
+
+    if (config.publish.packageFilesFilter === 'npmignore') {
+      status.addSteps(['Validate project has a ".npmignore" file']);
+
+      if (!hasNpmIgnore) {
+        throw new SmoothReleaseError('There must be a ".npmignore" file');
+      }
+    } else if (config.publish.packageFilesFilter === 'files') {
+      status.addSteps(['Validate package.json contains the "files" whitelist']);
+
+      if (!hasPackageJsonFiles) {
+        throw new SmoothReleaseError('The package.json must contain the "files" whitelist');
+      }
+    } else if (config.publish.packageFilesFilter === true) {
+      status.addSteps(['Validate one of ".npmignore" or "package.json.files" exist']);
+
+      if (!hasPackageJsonFiles && !hasNpmIgnore) {
+        throw new SmoothReleaseError('One of ".npmignore" or "package.json.files" must exist');
+      }
+    }
+
+    if (hasPackageJsonFiles && hasNpmIgnore) {
+      throw new SmoothReleaseError('A project can\'t have both a ".npmignore" blacklist and a "package.json.files" whitelist');
+    }
+  }
+};
+
 export default async ({ mayPublishOnNpm }) => {
   const shouldRunAtLeastOneValidation = some(config.publish);
   if (shouldRunAtLeastOneValidation) {
     title('Run validations');
 
-    await validateGithubToken();
     await validateBranch();
     await validateNoUncommittedChanges();
     await validateNoUntrackedFiles();
     await validateInSyncWithRemote();
+    await validatePackageFilesAreFilteredBeforePublish();
+    await validateGithubToken();
     mayPublishOnNpm && await validateNpmCredentials();
   }
 };
