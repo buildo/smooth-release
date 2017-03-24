@@ -161,7 +161,6 @@ export default async ({ mayPublishOnNpm }) => {
   if (shouldRunAtLeastOneValidation) {
     title('Run validations');
 
-    await validatePackageFilesAreFilteredBeforePublish();
     await validateBranch();
     await validateNoUncommittedChanges();
     await validateNoUntrackedFiles();
