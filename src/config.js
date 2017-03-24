@@ -80,7 +80,7 @@ const defaultConfig = {
     noUntrackedFiles: true,
     validNpmCredentials: true,
     validGithubToken: true,
-    packageFilesFilter: true
+    packageFilesFilter: 'files'
   },
   tasks: {
     validations: true,
