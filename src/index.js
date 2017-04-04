@@ -8,7 +8,7 @@ import release from './github/release';
 import changelog from './github/changelog';
 import commitAndPush from './commitAndPush';
 import { askForToken } from './github/token';
-import { onError, rl, log, bold } from './utils';
+import { onError, rl, log, bold, checkForUpdates } from './utils';
 import config from './config';
 import packageJson from '../package.json';
 
@@ -82,4 +82,5 @@ const main = async () => {
   }
 };
 
+checkForUpdates();
 main();
