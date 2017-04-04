@@ -7,6 +7,8 @@ import clc from 'cli-color';
 import inquirer from 'inquirer';
 import { startsWith, every } from 'lodash';
 import errorEx from 'error-ex';
+import updateNotifier from 'update-notifier';
+import smoothReleasePackageJson from '../package.json';
 import config from './config';
 
 // LOGS
@@ -103,6 +105,11 @@ export const getPackageJsonVersion = () => getPackageJson().version;
 
 export const getPackageJsonFiles = () => getPackageJson().files;
 
+const hasBeenInstalledGlobally = () => {
+  const npmRoot = execSync('npm root -g', { encoding: 'utf8' }).trim();
+  return __dirname === `${npmRoot}/smooth-release/lib`;
+};
+
 // OCTOKAT
 export const getGithubOwnerAndRepo = () => {
   const remoteOriginUrl = execSync('git config --get remote.origin.url', { encoding: 'utf8' }).trim();
@@ -145,3 +152,14 @@ function rlinterface() {
 }
 
 export const rl = rlinterface();
+
+// UPDATE NOTIFIER
+export function checkForUpdates() {
+  const notifier = updateNotifier({
+    pkg: smoothReleasePackageJson
+  });
+
+  notifier.notify({
+    isGlobal: hasBeenInstalledGlobally()
+  });
+}
