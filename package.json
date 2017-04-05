@@ -9,7 +9,8 @@
     "build": "rm -rf lib && babel src -d lib",
     "watch": "npm run build -- --watch --source-maps inline",
     "preversion": "npm run lint",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "release-version": "npm run build && ./smooth-release --validations --changelog --gh-release --npm-version --npm-publish"
   },
   "repository": {
     "type": "git",
