@@ -2,6 +2,13 @@
 
 
 
+## [v8.0.1](https://github.com/FrancescoCioria/smooth-release/tree/v8.0.1) (2017-04-05)
+[Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v8.0.0...v8.0.1)
+
+#### New features:
+
+- Use `update-notifier` to notify users when a new version is available [#66](https://github.com/FrancescoCioria/smooth-release/issues/66)
+
 ## [v8.0.0](https://github.com/FrancescoCioria/smooth-release/tree/v8.0.0) (2017-03-24)
 [Full Changelog](https://github.com/FrancescoCioria/smooth-release/compare/v7.0.3...v8.0.0)
 
