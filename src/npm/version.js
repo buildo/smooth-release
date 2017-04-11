@@ -118,7 +118,7 @@ const confirmation = async releaseInfo => {
 const version = async (releaseInfo) => {
   info('Increase version');
   status.addSteps([
-    `Assure tag "v${releaseInfo.version}" doesn\'t already exist`,
+    `Ensure tag "v${releaseInfo.version}" doesn\'t already exist`,
     'Run "npm version --no-git-tag-version"'
   ]);
 
