@@ -112,9 +112,16 @@ const hasBeenInstalledGlobally = () => {
 
 // OCTOKAT
 export const getGithubOwnerAndRepo = () => {
-  const remoteOriginUrl = execSync('git config --get remote.origin.url', { encoding: 'utf8' }).trim();
-
-  const [owner, repo] = remoteOriginUrl.slice(startsWith(remoteOriginUrl, 'https') ? 19 : 15, remoteOriginUrl.length - 4).split('/');
+  const remoteOriginUrl = execSync('git config --get remote.origin.url', {
+    encoding: 'utf8'
+  }).trim();
+  const isSSH = remoteOriginUrl.indexOf('git@') >= 0;
+  let owner, repo;
+  if (isSSH) {
+    [owner, repo] = remoteOriginUrl.replace('.git', '').split(':')[1].split('/');
+  } else {
+    [owner, repo] = remoteOriginUrl.slice(startsWith(remoteOriginUrl, 'https') ? 19 : 15, remoteOriginUrl.length - 4).split('/');
+  }
 
   return { owner, repo };
 };
