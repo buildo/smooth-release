@@ -14,6 +14,7 @@ import {
 } from '../utils';
 import getAllTags from '../modules/getAllTags';
 import getAllClosedIssues from '../modules/getAllClosedIssues';
+import getAllMergedPullRequests from '../modules/getAllMergedPullRequests';
 import config from '../config';
 
 const { owner, repo } = getGithubOwnerAndRepo();
@@ -95,16 +96,24 @@ const createChangelogSection = ({ previousTag, tag, issues = [] }) => {
   return `${header}\n\n${content.trim()}`;
 };
 
-const getDataFromGitHub = async () => {
+const getDataFromGitHub = async (dataType) => {
   info('Get data from GitHub');
   status.addSteps([
-    'Get all closed issues from GitHub',
+    `Get all ${dataType === 'pullRequests' ? 'merged pull requests' : 'closed issues'} from GitHub`,
     'Get all tags from GitHub',
     'Add "createdAt" date-time info to each tag'
   ]);
 
-  // GET closed issues
-  const closedIssues = (await getAllClosedIssues()).filter(i => !hasAtLeastOneLabel(i, config.github.changelog.ignoredLabels));
+  // GET data from GitHub
+  let data;
+  switch (dataType) {
+    case 'issues': // GET closed issues
+      data = (await getAllClosedIssues()).filter(i => !hasAtLeastOneLabel(i, config.github.changelog.ignoredLabels));
+      break;
+    case 'pullRequests': // GET merged pull requests
+      data = (await getAllMergedPullRequests()).filter(i => !hasAtLeastOneLabel(i, config.github.changelog.ignoredLabels));
+      break;
+  }
   status.doneStep(true);
 
   // GET tags
@@ -115,13 +124,13 @@ const getDataFromGitHub = async () => {
   const tagsWithCreatedAt = tags.length ? await addCreatedAtInfoToTags(tags) : tags;
   status.doneStep(true);
 
-  return { closedIssues, tagsWithCreatedAt };
+  return { data, tagsWithCreatedAt };
 };
 
-const generateChangelog = ({ closedIssues, tagsWithCreatedAt, hasIncreasedVersion }) => {
-  info('Generate CHANGELOG.md');
+const generateChangelog = ({ data, dataType, tagsWithCreatedAt, hasIncreasedVersion }) => {
+  info('Generate the changelog');
   status.addSteps([
-    'Group closed issues by relative tag',
+    `Group ${dataType === 'pullRequests' ? 'merged pull requests' : 'closed issues'} by relative tag`,
     'Generate changelog for each tag'
   ]);
 
@@ -129,17 +138,25 @@ const generateChangelog = ({ closedIssues, tagsWithCreatedAt, hasIncreasedVersio
     [{ name: `v${getPackageJsonVersion()}`, createdAt: new Date() }, ...tagsWithCreatedAt] :
     tagsWithCreatedAt;
 
-  // GROUP issues by tag
-  const issuesGroupedByTag = groupIssuesByTag(closedIssues, tags);
+  // GROUP data by tag
+  let dataGroupedByTag;
+  switch (dataType) {
+    case 'issues':
+      dataGroupedByTag = groupIssuesByTag(data, tags);
+      break;
+    case 'pullRequests':
+      dataGroupedByTag = groupIssuesByTag(data, tags);
+      break;
+  }
   status.doneStep(true);
 
   // WRITE changelog for each tag
   const changelogSections = tags.map((tag, i) => (
-    createChangelogSection({ tag, previousTag: tags[i + 1], issues: issuesGroupedByTag[tag.name] })
+    createChangelogSection({ tag, previousTag: tags[i + 1], issues: dataGroupedByTag[tag.name] })
   ));
 
   // WRITE changelog for unreleased issues (without tag)
-  const unreleased = issuesGroupedByTag.unreleased ? createChangelogSection({ previousTag: tags[0], tag: null, issues: issuesGroupedByTag.unreleased }) : '';
+  const unreleased = dataGroupedByTag.unreleased ? createChangelogSection({ previousTag: tags[0], tag: null, issues: dataGroupedByTag.unreleased }) : '';
 
   // WRITE complete changelog
   const changelogMarkdown = `#  Change Log\n\n${[unreleased].concat(changelogSections).join('\n\n')}`;
@@ -149,27 +166,28 @@ const generateChangelog = ({ closedIssues, tagsWithCreatedAt, hasIncreasedVersio
 };
 
 const saveChangelog = async changelogMarkdown => {
-  info('Save CHANGELOG.md on GitHub');
+  info('Update CHANGELOG.md');
   status.addSteps([
-    'Save changelog locally'
+    'Update CHANGELOG.md locally'
   ]);
 
   // SAVE changelog
   fs.writeFileSync(`${getRootFolderPath()}/${config.github.changelog.outputPath}`, changelogMarkdown);
-  status.doneStep(true);
 
   // THROW error if changelog hasn't changed
   if ((await exec(`git status --porcelain -- ${config.github.changelog.outputPath}`)).trim().length === 0) {
     throw new SmoothReleaseError('CHANGELOG.md hasn\'t changed');
   }
+
+  status.doneStep(true);
 };
 
-export default async ({ hasIncreasedVersion }) => {
+export default async ({ hasIncreasedVersion, dataType }) => {
   title('Update changelog');
 
-  const { closedIssues, tagsWithCreatedAt } = await getDataFromGitHub();
+  const { data, tagsWithCreatedAt } = await getDataFromGitHub(dataType);
 
-  const changelogMarkdown = generateChangelog({ closedIssues, tagsWithCreatedAt, hasIncreasedVersion });
+  const changelogMarkdown = generateChangelog({ data, dataType, tagsWithCreatedAt, hasIncreasedVersion });
 
   await saveChangelog(changelogMarkdown);
 
