@@ -63,7 +63,7 @@ const checkIfVersionShouldBeBreaking = async ({ lastVersionTag, dataType }) => {
     }
 
     // VERIFY IF RELEASE SHOULD BE BREAKING
-    const unpublishedBreakingPullRequests = breakingPullRequestsMergedAfterLastTag.filter(i => !lastVersionTagDateTime || i.closedAt >= new Date(lastVersionTagDateTime));
+    const unpublishedBreakingPullRequests = breakingPullRequestsMergedAfterLastTag.filter(i => !lastVersionTagDateTime || i.mergedAt >= new Date(lastVersionTagDateTime));
     return unpublishedBreakingPullRequests.length > 0;
   }
 };
