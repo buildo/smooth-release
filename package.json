@@ -14,21 +14,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FrancescoCioria/smooth-release.git"
+    "url": "git+https://github.com/buildo/smooth-release.git"
   },
   "bin": {
     "smooth-release": "./smooth-release"
   },
-  "author": "FrancescoCioria <firefelix@gmail.com>",
+  "author": "FrancescoCioria <francesco@buildo.io>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/FrancescoCioria/smooth-release/issues"
+    "url": "https://github.com/buildo/smooth-release/issues"
   },
   "files": [
     "lib",
     "smooth-release"
   ],
-  "homepage": "https://github.com/FrancescoCioria/smooth-release#readme",
+  "homepage": "https://github.com/buildo/smooth-release#readme",
   "dependencies": {
     "babel-runtime": "^6.18.0",
     "better-console": "^0.2.4",
