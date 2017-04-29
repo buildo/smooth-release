@@ -20,6 +20,7 @@ const smoothReleaseRC = fs.existsSync(smoothReleaseRCPath) ?
 const Config = t.interface({
   github: t.interface({
     token: t.maybe(t.String),
+    dataType: t.maybe(t.enums.of(['issues', 'pullRequests'])),
     changelog: t.interface({
       outputPath: t.String,
       ignoredLabels: t.list(t.String),
@@ -57,6 +58,7 @@ const Config = t.interface({
 
 const defaultConfig = {
   github: {
+    dataType: 'issues',
     changelog: {
       outputPath: './CHANGELOG.md',
       ignoredLabels: ['DX', 'invalid', 'discussion'],
