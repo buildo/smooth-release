@@ -16,23 +16,10 @@ import {
 
 const stdio = [process.stdin, null, process.stderr];
 
-const computeRelease = async ({ manualVersion, packageJsonVersion }) => {
-  info('Compute release');
-
-  if (!manualVersion) {
-    status.addSteps([
-      'Get all tags from GitHub',
-      'Check if version should be "breaking"',
-      'Compute version'
-    ]);
-
-    // AVOID DUPLICATE PUBLISHED VERSIONS
-    const tags = await github.tags.fetch();
-    status.doneStep(true);
-
+const checkIfVersionShouldBeBreaking = async ({ lastVersionTag, dataType }) => {
+  if (dataType === 'issues') {
     let breakingIssuesUpdatedAfterLastTag = undefined;
     let lastVersionTagDateTime = undefined;
-    const lastVersionTag = find(tags, isVersionTag);
 
     if (lastVersionTag) {
       const lastVersionTagSha = lastVersionTag.commit.sha;
@@ -53,7 +40,52 @@ const computeRelease = async ({ manualVersion, packageJsonVersion }) => {
 
     // VERIFY IF RELEASE SHOULD BE BREAKING
     const unpublishedBreakingIssues = breakingIssuesUpdatedAfterLastTag.filter(i => !lastVersionTagDateTime || i.closedAt >= new Date(lastVersionTagDateTime));
-    const isBreaking = unpublishedBreakingIssues.length > 0;
+    return unpublishedBreakingIssues.length > 0;
+  } else if (dataType === 'pullRequests') {
+    let breakingPullRequestsMergedAfterLastTag = undefined;
+    let lastVersionTagDateTime = undefined;
+
+    if (lastVersionTag) {
+      const lastVersionTagSha = lastVersionTag.commit.sha;
+
+      const tagCommit = await github.commits(lastVersionTagSha).fetch();
+      lastVersionTagDateTime = tagCommit.commit.author.date;
+
+      const pullRequestsMergedAfterLastTag = await github.pulls.fetch({ state: 'closed', since: lastVersionTagDateTime });
+      const unpublishedMergedPullRequests = pullRequestsMergedAfterLastTag.filter(i => i.mergedAt >= new Date(lastVersionTagDateTime));
+
+      if (unpublishedMergedPullRequests.length === 0) {
+        throw new SmoothReleaseError('Can\'t find any merged pull request after last publish. Are you sure there are new features to publish?');
+      }
+      breakingPullRequestsMergedAfterLastTag = await github.pulls.fetch({ labels: 'breaking', state: 'closed', since: lastVersionTagDateTime });
+    } else {
+      breakingPullRequestsMergedAfterLastTag = await github.pulls.fetch({ labels: 'breaking', state: 'closed' });
+    }
+
+    // VERIFY IF RELEASE SHOULD BE BREAKING
+    const unpublishedBreakingPullRequests = breakingPullRequestsMergedAfterLastTag.filter(i => !lastVersionTagDateTime || i.mergedAt >= new Date(lastVersionTagDateTime));
+    return unpublishedBreakingPullRequests.length > 0;
+  }
+};
+
+const computeRelease = async ({ manualVersion, dataType, packageJsonVersion }) => {
+  info('Compute release');
+
+  if (!manualVersion) {
+    status.addSteps([
+      'Get all tags from GitHub',
+      'Check if version should be "breaking"',
+      'Compute version'
+    ]);
+
+    // AVOID DUPLICATE PUBLISHED VERSIONS
+    const tags = await github.tags.fetch();
+    status.doneStep(true);
+
+
+    // CHECK IF VERSION SHOULD BE BREAKING
+    const lastVersionTag = find(tags, isVersionTag);
+    const isBreaking = await checkIfVersionShouldBeBreaking({ lastVersionTag, dataType });
     status.doneStep(true);
 
     // COMPUTE RELEASE INFO
@@ -134,11 +166,12 @@ const version = async (releaseInfo) => {
   status.doneStep(true);
 };
 
-export default async (manualVersion) => {
+export default async ({ manualVersion, dataType }) => {
   title('Increase version in "package.json"');
 
   const releaseInfo = await computeRelease({
     manualVersion,
+    dataType,
     packageJsonVersion: getPackageJsonVersion()
   });
 

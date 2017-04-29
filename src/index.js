@@ -14,7 +14,7 @@ import packageJson from '../package.json';
 
 const _argv = minimist(process.argv.slice(2));
 
-const { tasks: defaultArgv } = config;
+const { tasks: defaultArgv, github: { dataType } } = config;
 
 const runDefault = !some(Object.keys(defaultArgv), arg => _argv[arg] === true);
 
@@ -53,12 +53,12 @@ const main = async () => {
     }
 
     if (await promptUserBeforeRunningTask('npm-version', 'Do you want to run the "npm-version" task and increase the version of your library?')) {
-      await version(mainArgument);
+      await version({ manualVersion: mainArgument, dataType });
       hasIncreasedVersion = true;
     }
 
     if (await promptUserBeforeRunningTask('changelog', 'Do you want to run the "changelog" task and update the CHANGELOG.md file?')) {
-      await changelog({ hasIncreasedVersion });
+      await changelog({ hasIncreasedVersion, dataType });
       hasUpdatedChangelog = true;
     }
 

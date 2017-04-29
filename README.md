@@ -8,8 +8,8 @@ Smart CLI utility to **safely** and **automatically** do every step to release a
 Simply run `smooth-release` from your root folder, that's all :)
 
 #### Custom settings
-- Every config value used by `smooth-release` is overridable: jump to [`.smooth-releaserc`](https://github.com/FrancescoCioria/smooth-release#smooth-releaserc) section to know more about it.
-- You can run or turn off specific tasks also by passing a set of CLI arguments: jump to [`CLI arguments`](https://github.com/FrancescoCioria/smooth-release#cli-arguments) section to know more about it.
+- Every config value used by `smooth-release` is overridable: jump to [`.smooth-releaserc`](https://github.com/buildo/smooth-release#smooth-releaserc) section to know more about it.
+- You can run or turn off specific tasks also by passing a set of CLI arguments: jump to [`CLI arguments`](https://github.com/buildo/smooth-release#cli-arguments) section to know more about it.
 
 
 ## What it does
@@ -38,9 +38,11 @@ In order to proceed each one of these validations must pass (they can be optiona
 If a version is "breaking" it will be a `major` otherwise it will be a `patch`.
 `smooth-release` never creates a `minor` version.
 
-To decide if a version is "breaking", `smooth-release` analyzes every closed issue from GitHub: if there is **at least** one *valid* closed issue marked as "breaking" the version will be breaking.
+To decide if a version is "breaking", `smooth-release` analyzes every *closed issue* (or *merged pull request*) from GitHub: if there is **at least** one *valid* closed issue marked as "breaking" the version will be breaking.
 
-To mark an issue as "breaking" you can add to it a label named as you like. This label should also be added to `smooth-releaserc` to let `smooth-release` know about it.
+To mark an *issue* (or *pull request*) as "breaking" you can add to it a label named as you like. This label should also be added to `smooth-releaserc` to let `smooth-release` know about it.
+
+NOTE: you can use *pull requests* instead of *issues* by setting `github.dataType` in `.smooth-releaserc` to `"pullRequests"`
 
 **MANUAL OVERRIDE:**
 If you need to, you can override this step by manually passing the desired version/increase level as argument to `smooth-release`:
@@ -57,11 +59,13 @@ Runs:
 1. `npm version ${newVersion} --no-git-tag-version`
 
 ### Generate CHANGELOG.md
-The script to generate the changelog is basically a replica in JavaScript of [github-changelog-generator](https://github.com/skywinder/github-changelog-generator). The only difference is that it only uses closed issues (PRs are ignored).
+The script to generate the changelog is basically a replica in JavaScript of [github-changelog-generator](https://github.com/skywinder/github-changelog-generator).
 
-This script is stateless: every time it's run it replaces CHANGELOG.md with a new one.
+The changelog is generated using *closed issues* by default. You can use *merged pull requests* instead by setting `github.dataType` in `.smooth-releaserc` to `"pullRequests"`
 
-You can see an example by looking at CHANGELOG.md file on this repo: https://github.com/FrancescoCioria/smooth-release/blob/master/CHANGELOG.md.
+This script is stateless: every time it runs it replaces CHANGELOG.md with a new one.
+
+You can see an example by looking at the CHANGELOG.md file on this repo: https://github.com/buildo/smooth-release/blob/master/CHANGELOG.md.
 
 ### Create release on GitHub with link to CHANGELOG.md section
 It statelessly creates a GitHub release for the last npm-version tag.
@@ -70,7 +74,7 @@ It statelessly creates a GitHub release for the last npm-version tag.
 
 The release is named after the tag (ex: v1.2.3) and the body contains a link to the relative section in CHANGELOG.md.
 
-You can see an example by looking at any release from this repo: https://github.com/FrancescoCioria/smooth-release/releases.
+You can see an example by looking at any release from this repo: https://github.com/buildo/smooth-release/releases.
 
 ### Create release commit and push it on origin
 This step is run only if there are changes to commit. This may happen if you run one of these scripts:
@@ -93,6 +97,7 @@ Runs:
 ```js
 {
   github: {
+    dataType: 'issues',
     changelog: {
       outputPath: './CHANGELOG.md',
       ignoredLabels: ['DX', 'invalid', 'discussion'],
