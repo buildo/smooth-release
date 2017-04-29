@@ -52,10 +52,10 @@ const checkIfVersionShouldBeBreaking = async ({ lastVersionTag, dataType }) => {
       lastVersionTagDateTime = tagCommit.commit.author.date;
 
       const pullRequestsMergedAfterLastTag = await github.pulls.fetch({ state: 'closed', since: lastVersionTagDateTime });
-      const unpublishedIssues = pullRequestsMergedAfterLastTag.filter(i => i.mergedAt >= new Date(lastVersionTagDateTime));
+      const unpublishedMergedPullRequests = pullRequestsMergedAfterLastTag.filter(i => i.mergedAt >= new Date(lastVersionTagDateTime));
 
-      if (unpublishedIssues.length === 0) {
-        throw new SmoothReleaseError('Can\'t find any pull request merged after last publish. Are you sure there are new features to publish?');
+      if (unpublishedMergedPullRequests.length === 0) {
+        throw new SmoothReleaseError('Can\'t find any merged pull request after last publish. Are you sure there are new features to publish?');
       }
       breakingPullRequestsMergedAfterLastTag = await github.pulls.fetch({ labels: 'breaking', state: 'closed', since: lastVersionTagDateTime });
     } else {
