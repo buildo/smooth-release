@@ -33,7 +33,8 @@ const Config = t.interface({
         labels: t.list(t.String)
       }),
       feature: t.interface({
-        title: t.String
+        title: t.String,
+        labels: t.list(t.String)
       })
     })
   }),
@@ -71,7 +72,8 @@ const defaultConfig = {
         labels: ['breaking']
       },
       feature: {
-        title: '#### New features:'
+        title: '#### New features:',
+        labels: ['feature']
       }
     }
   },

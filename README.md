@@ -110,7 +110,8 @@ Runs:
         labels: ['breaking']
       },
       feature: {
-        title: '#### New features:'
+        title: '#### New features:',
+        labels: ['feature']
       }
     }
   },
