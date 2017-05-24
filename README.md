@@ -119,7 +119,9 @@ Runs:
     inSyncWithRemote: true,
     noUncommittedChanges: true,
     noUntrackedFiles: true,
-    validNpmCredentials: true
+    validNpmCredentials: true,
+    validGithubToken: true,
+    packageFilesFilter: 'files'
   },
   tasks: {
     validations: true,
