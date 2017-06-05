@@ -13,6 +13,7 @@ import {
   rl,
   exec
 } from '../utils';
+import config from '../config';
 
 const stdio = [process.stdin, null, process.stderr];
 
@@ -175,7 +176,9 @@ export default async ({ manualVersion, dataType }) => {
     packageJsonVersion: getPackageJsonVersion()
   });
 
-  await confirmation(releaseInfo);
+  if (config.publish.npmVersionConfirmation) {
+    await confirmation(releaseInfo);
+  }
 
   await version(releaseInfo);
 };
