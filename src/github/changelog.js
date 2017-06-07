@@ -53,6 +53,7 @@ const groupIssuesByTag = (closedIssues, tags) => {
 const groupIssuesByType = issues => {
   const isBreaking = issue => hasAtLeastOneLabel(issue, config.github.changelog.breaking.labels);
   const isBug = issue => hasAtLeastOneLabel(issue, config.github.changelog.bug.labels);
+  const isFeature = issue => hasAtLeastOneLabel(issue, config.github.changelog.feature.labels);
 
   return issues.reduce((issuesByType, issue) => {
     if (isBreaking(issue)) {
@@ -60,17 +61,23 @@ const groupIssuesByType = issues => {
         ...issuesByType,
         breaking: (issuesByType.breaking || []).concat(issue)
       };
-    } else if (isBug(issue)) {
+    }
+
+    if (isBug(issue)) {
       return {
         ...issuesByType,
         bug: (issuesByType.bug || []).concat(issue)
       };
-    } else {
+    }
+
+    if (isFeature(issue)) {
       return {
         ...issuesByType,
         feature: (issuesByType.feature || []).concat(issue)
       };
     }
+
+    return issuesByType;
   }, {});
 };
 
