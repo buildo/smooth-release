@@ -121,7 +121,8 @@ Runs:
     noUntrackedFiles: true,
     validNpmCredentials: true,
     validGithubToken: true,
-    packageFilesFilter: 'files'
+    packageFilesFilter: 'files',
+    npmVersionConfirmation: true
   },
   tasks: {
     validations: true,
