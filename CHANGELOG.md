@@ -2,6 +2,14 @@
 
 
 
+## [v8.0.4](https://github.com/buildo/smooth-release/tree/v8.0.4) (2017-06-07)
+[Full Changelog](https://github.com/buildo/smooth-release/compare/v8.0.3...v8.0.4)
+
+#### New features:
+
+- human validation of computed version should be optional [#98](https://github.com/buildo/smooth-release/issues/98)
+- Optionally use pull requests instead of issues [#91](https://github.com/buildo/smooth-release/issues/91)
+
 ## [v8.0.3](https://github.com/buildo/smooth-release/tree/v8.0.3) (2017-04-18)
 [Full Changelog](https://github.com/buildo/smooth-release/compare/v8.0.2...v8.0.3)
 
