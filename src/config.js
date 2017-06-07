@@ -44,7 +44,8 @@ const Config = t.interface({
     noUntrackedFiles: t.Boolean,
     validNpmCredentials: t.Boolean,
     validGithubToken: t.Boolean,
-    packageFilesFilter: t.union([t.enums.of(['npmignore', 'files']), t.Boolean])
+    packageFilesFilter: t.union([t.enums.of(['npmignore', 'files']), t.Boolean]),
+    npmVersionConfirmation: t.Boolean
   }),
   tasks: t.interface({
     changelog: t.maybe(t.Boolean),
@@ -54,7 +55,7 @@ const Config = t.interface({
     'gh-release': t.maybe(t.Boolean),
     'gh-release-all': t.maybe(t.Boolean)
   })
-});
+}, { name: 'SmoothReleaseRC' });
 
 const defaultConfig = {
   github: {
@@ -82,7 +83,8 @@ const defaultConfig = {
     noUntrackedFiles: true,
     validNpmCredentials: true,
     validGithubToken: true,
-    packageFilesFilter: 'files'
+    packageFilesFilter: 'files',
+    npmVersionConfirmation: true
   },
   tasks: {
     validations: true,
