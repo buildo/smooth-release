@@ -40,7 +40,11 @@ const checkIfVersionShouldBeBreaking = async ({ lastVersionTag, dataType }) => {
     }
 
     // VERIFY IF RELEASE SHOULD BE BREAKING
-    const unpublishedBreakingIssues = breakingIssuesUpdatedAfterLastTag.filter(i => !lastVersionTagDateTime || i.closedAt >= new Date(lastVersionTagDateTime));
+    const unpublishedBreakingIssues = breakingIssuesUpdatedAfterLastTag.filter(i => {
+      const hasIgnoredLabels = config.changelog.ignoredLabels.some(il => i.labels.map(l => l.name).includes(il));
+      const isUnpublished = !lastVersionTagDateTime || i.closedAt >= new Date(lastVersionTagDateTime);
+      return isUnpublished && !hasIgnoredLabels;
+    });
     return unpublishedBreakingIssues.length > 0;
   } else if (dataType === 'pullRequests') {
     let breakingPullRequestsMergedAfterLastTag = undefined;
