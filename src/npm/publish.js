@@ -5,7 +5,8 @@ import {
   title, info, log, emptyLine,
   status, exec, rl,
   SmoothReleaseError,
-  getRootFolderPath, getPackageJsonName, getPackageJsonVersion
+  getRootFolderPath,
+  getPackageJsonScripts, getPackageJsonName, getPackageJsonVersion
 } from '../utils';
 import config from '../config';
 
@@ -20,11 +21,12 @@ const readTar = (file) => {
   return tar.list({ file, onentry }).then(() => actual);
 };
 
-async function generatePackage() {
-  status.addSteps([
-    'Run "npm pack"'
-  ]);
+async function prepublish() {
+  await exec('npm run prepublish', { stdio });
+  status.doneStep(true);
+}
 
+async function generatePackage() {
   // generate tar package
   await exec('npm pack', { stdio });
   status.doneStep(true);
@@ -45,14 +47,20 @@ async function confirmation() {
     deletePackage();
     throw new SmoothReleaseError('You refused the generated package. Aborting');
   }
+  emptyLine();
 }
 
-async function publish() {
+async function publish(useTarPackage) {
   status.addSteps([
-    'Run "npm prepublish" and "npm publish"'
+    'Run "npm publish"'
   ]);
 
-  await exec(`npm publish ${tarPackageFilename}`, { stdio });
+  if (useTarPackage) {
+    await exec(`npm publish ${tarPackageFilename}`, { stdio });
+  } else {
+    await exec('npm publish', { stdio });
+  }
+
   deletePackage();
   status.doneStep(true);
 }
@@ -60,11 +68,16 @@ async function publish() {
 export default async () => {
   title('Publish package on npm');
 
-  await generatePackage();
-
   if (config.publish.tarPackageConfirmation) {
+    status.addSteps([
+      getPackageJsonScripts().prepublish && 'Run "npm prepublish"',
+      'Run "npm pack"'
+    ]);
+
+    getPackageJsonScripts().prepublish && await prepublish();
+    await generatePackage();
     await confirmation();
   }
 
-  await publish();
+  await publish(config.publish.tarPackageConfirmation);
 };

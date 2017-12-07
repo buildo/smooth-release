@@ -105,6 +105,8 @@ export const getPackageJsonVersion = () => getPackageJson().version;
 
 export const getPackageJsonFiles = () => getPackageJson().files;
 
+export const getPackageJsonScripts = () => getPackageJson().scripts;
+
 const hasBeenInstalledGlobally = () => {
   const npmRoot = execSync('npm root -g', { encoding: 'utf8' }).trim();
   return __dirname === `${npmRoot}/smooth-release/lib`;
