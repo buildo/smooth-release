@@ -45,7 +45,8 @@ const Config = t.interface({
     validNpmCredentials: t.Boolean,
     validGithubToken: t.Boolean,
     packageFilesFilter: t.union([t.enums.of(['npmignore', 'files']), t.Boolean]),
-    npmVersionConfirmation: t.Boolean
+    npmVersionConfirmation: t.Boolean,
+    tarPackageConfirmation: t.Boolean
   }),
   tasks: t.interface({
     changelog: t.maybe(t.Boolean),
@@ -84,7 +85,8 @@ const defaultConfig = {
     validNpmCredentials: true,
     validGithubToken: true,
     packageFilesFilter: 'files',
-    npmVersionConfirmation: true
+    npmVersionConfirmation: true,
+    tarPackageConfirmation: true
   },
   tasks: {
     validations: true,
