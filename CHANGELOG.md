@@ -2,6 +2,18 @@
 
 
 
+## [v8.0.5](https://github.com/buildo/smooth-release/tree/v8.0.5) (2017-12-13)
+[Full Changelog](https://github.com/buildo/smooth-release/compare/v8.0.4...v8.0.5)
+
+#### Fixes (bugs & defects):
+
+- version script ignores changelog.ignoredLabels [#103](https://github.com/buildo/smooth-release/issues/103)
+
+#### New features:
+
+- add docs for #99 [#101](https://github.com/buildo/smooth-release/issues/101)
+- Preview package files and validate against package.json [#93](https://github.com/buildo/smooth-release/issues/93)
+
 ## [v8.0.4](https://github.com/buildo/smooth-release/tree/v8.0.4) (2017-06-07)
 [Full Changelog](https://github.com/buildo/smooth-release/compare/v8.0.3...v8.0.4)
 
