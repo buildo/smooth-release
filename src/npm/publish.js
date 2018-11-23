@@ -56,9 +56,9 @@ async function publish(useTarPackage) {
   ]);
 
   if (useTarPackage) {
-    await exec(`npm publish ${tarPackageFilename}`, { stdio });
+    await exec(`npm publish ${tarPackageFilename} --registry https://registry.npmjs.org/`, { stdio });
   } else {
-    await exec('npm publish', { stdio });
+    await exec('npm publish --registry https://registry.npmjs.org/', { stdio });
   }
 
   deletePackage();
