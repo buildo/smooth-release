@@ -1,6 +1,6 @@
 {
   "name": "smooth-release",
-  "version": "8.0.6",
+  "version": "8.0.7",
   "description": "Smart CLI tool to safely and automatically do every step to release a new version of a library hosted on GitHub and published on npm",
   "main": "lib",
   "scripts": {

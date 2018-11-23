@@ -2,6 +2,13 @@
 
 
 
+## [v8.0.7](https://github.com/buildo/smooth-release/tree/v8.0.7) (2018-11-23)
+[Full Changelog](https://github.com/buildo/smooth-release/compare/v8.0.6...v8.0.7)
+
+#### Fixes (bugs & defects):
+
+- publish with tar package fails [#109](https://github.com/buildo/smooth-release/issues/109)
+
 ## [v8.0.6](https://github.com/buildo/smooth-release/tree/v8.0.6) (2018-11-23)
 [Full Changelog](https://github.com/buildo/smooth-release/compare/v8.0.5...v8.0.6)
 
