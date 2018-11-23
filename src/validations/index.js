@@ -79,7 +79,7 @@ const validateNpmCredentials = async () => {
 
     const trim = s => s.trim();
 
-    const user = await exec('npm whoami', { encoding: 'utf8' }).then(trim).catch(() => null);
+    const user = await exec('npm whoami --registry https://registry.npmjs.org/', { encoding: 'utf8' }).then(trim).catch(() => null);
 
     if (!user) {
       throw new SmoothReleaseError('There is no logged in user for "npm"');
