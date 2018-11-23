@@ -2,6 +2,13 @@
 
 
 
+## [v8.0.6](https://github.com/buildo/smooth-release/tree/v8.0.6) (2018-11-23)
+[Full Changelog](https://github.com/buildo/smooth-release/compare/v8.0.5...v8.0.6)
+
+#### Fixes (bugs & defects):
+
+- Does not work if called from `yarn` [#107](https://github.com/buildo/smooth-release/issues/107)
+
 ## [v8.0.5](https://github.com/buildo/smooth-release/tree/v8.0.5) (2017-12-13)
 [Full Changelog](https://github.com/buildo/smooth-release/compare/v8.0.4...v8.0.5)
 
