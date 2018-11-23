@@ -12,9 +12,6 @@ import config from '../config';
 
 const stdio = [process.stdin, null, process.stderr];
 
-const tarPackageFilename = `${getPackageJsonName()}-${getPackageJsonVersion()}.tgz`;
-const tarPackageFilePath = path.resolve(getRootFolderPath(), tarPackageFilename);
-
 const readTar = (file) => {
   const actual = [];
   const onentry = entry => actual.push(entry.path);
@@ -32,11 +29,11 @@ async function generatePackage() {
   status.doneStep(true);
 }
 
-function deletePackage() {
+function deletePackage(tarPackageFilePath) {
   fs.unlinkSync(tarPackageFilePath);
 }
 
-async function confirmation() {
+async function confirmation(tarPackageFilePath) {
   // log package
   info('Package contents');
   const tarContents = await readTar(tarPackageFilePath);
@@ -44,13 +41,13 @@ async function confirmation() {
   emptyLine();
 
   if (!await rl.confirmation('If you continue you will publish the package on npm. Are you sure?')) {
-    deletePackage();
+    deletePackage(tarPackageFilePath);
     throw new SmoothReleaseError('You refused the generated package. Aborting');
   }
   emptyLine();
 }
 
-async function publish(useTarPackage) {
+async function publish(useTarPackage, tarPackageFilename, tarPackageFilePath) {
   status.addSteps([
     'Run "npm publish"'
   ]);
@@ -61,12 +58,15 @@ async function publish(useTarPackage) {
     await exec('npm publish --registry https://registry.npmjs.org/', { stdio });
   }
 
-  deletePackage();
+  deletePackage(tarPackageFilePath);
   status.doneStep(true);
 }
 
 export default async () => {
   title('Publish package on npm');
+
+  const tarPackageFilename = `${getPackageJsonName()}-${getPackageJsonVersion()}.tgz`;
+  const tarPackageFilePath = path.resolve(getRootFolderPath(), tarPackageFilename);
 
   if (config.publish.tarPackageConfirmation) {
     status.addSteps([
@@ -76,8 +76,8 @@ export default async () => {
 
     getPackageJsonScripts().prepublish && await prepublish();
     await generatePackage();
-    await confirmation();
+    await confirmation(tarPackageFilePath);
   }
 
-  await publish(config.publish.tarPackageConfirmation);
+  await publish(config.publish.tarPackageConfirmation, tarPackageFilename, tarPackageFilePath);
 };
