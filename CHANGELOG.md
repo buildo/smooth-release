@@ -2,6 +2,13 @@
 
 
 
+## [v8.0.8](https://github.com/buildo/smooth-release/tree/v8.0.8) (2018-12-06)
+[Full Changelog](https://github.com/buildo/smooth-release/compare/v8.0.7...v8.0.8)
+
+#### Fixes (bugs & defects):
+
+- throws error without a `.smooth-releaserc` well configured file [#111](https://github.com/buildo/smooth-release/issues/111)
+
 ## [v8.0.7](https://github.com/buildo/smooth-release/tree/v8.0.7) (2018-11-23)
 [Full Changelog](https://github.com/buildo/smooth-release/compare/v8.0.6...v8.0.7)
 
