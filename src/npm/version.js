@@ -41,7 +41,7 @@ const checkIfVersionShouldBeBreaking = async ({ lastVersionTag, dataType }) => {
 
     // VERIFY IF RELEASE SHOULD BE BREAKING
     const unpublishedBreakingIssues = breakingIssuesUpdatedAfterLastTag.filter(i => {
-      const hasIgnoredLabels = config.changelog.ignoredLabels.some(il => i.labels.map(l => l.name).includes(il));
+      const hasIgnoredLabels = config.github.changelog.ignoredLabels.some(il => i.labels.map(l => l.name).includes(il));
       const isUnpublished = !lastVersionTagDateTime || i.closedAt >= new Date(lastVersionTagDateTime);
       return isUnpublished && !hasIgnoredLabels;
     });
