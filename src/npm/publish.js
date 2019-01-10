@@ -65,7 +65,10 @@ async function publish(useTarPackage, tarPackageFilename, tarPackageFilePath) {
 export default async () => {
   title('Publish package on npm');
 
-  const tarPackageFilename = `${getPackageJsonName()}-${getPackageJsonVersion()}.tgz`;
+  const packageJsonName = getPackageJsonName();
+  const cleanedPackageJsonName = packageJsonName.startsWith('@') ? packageJsonName.replace('@', '').replace('/', '-') : packageJsonName;
+
+  const tarPackageFilename = `${cleanedPackageJsonName}-${getPackageJsonVersion()}.tgz`;
   const tarPackageFilePath = path.resolve(getRootFolderPath(), tarPackageFilename);
 
   if (config.publish.tarPackageConfirmation) {
