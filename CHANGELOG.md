@@ -2,6 +2,13 @@
 
 
 
+## [v8.0.9](https://github.com/buildo/smooth-release/tree/v8.0.9) (2019-01-10)
+[Full Changelog](https://github.com/buildo/smooth-release/compare/v8.0.8...v8.0.9)
+
+#### Fixes (bugs & defects):
+
+- `publish` with `pack` does not work for organization's packages [#113](https://github.com/buildo/smooth-release/issues/113)
+
 ## [v8.0.8](https://github.com/buildo/smooth-release/tree/v8.0.8) (2018-12-06)
 [Full Changelog](https://github.com/buildo/smooth-release/compare/v8.0.7...v8.0.8)
 
