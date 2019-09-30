@@ -35,8 +35,8 @@
     "cli-color": "^1.2.0",
     "elegant-status": "^1.1.0",
     "error-ex": "^1.3.0",
-    "inquirer": "^0.10.1",
-    "lodash": "^4.16.4",
+    "inquirer": "^7.0.0",
+    "lodash": "^4.17.15",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "octokat": "^0.4.18",
@@ -47,7 +47,7 @@
     "update-notifier": "^2.1.0"
   },
   "devDependencies": {
-    "babel-cli": "^6",
+    "babel-cli": "^6.26.0",
     "babel-eslint": "^7.0.0",
     "babel-plugin-transform-runtime": "^6.15.0",
     "babel-preset-es2015": "^6.16.0",
